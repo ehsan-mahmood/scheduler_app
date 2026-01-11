@@ -1,0 +1,9 @@
+# Data directory (JSON storage)
+data/
+*.json
+
+# PHP
+vendor/
+composer.lock
+.env
+

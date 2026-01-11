@@ -1,0 +1,2104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Driving Lesson</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Theme 3: Premium / High-End */
+            --primary: #111827;
+            --primary-dark: #030712;
+            --primary-light: #374151;
+            --secondary: #D97706;
+            --success: #10b981;
+            --warning: #D97706;
+            --danger: #ef4444;
+            --dark: #111827;
+            --gray-50: #F9FAFB;
+            --gray-100: #f3f4f6;
+            --gray-200: #E5E7EB;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* Status colors */
+            --status-unavailable: #e5e7eb;
+            --status-full: #fecaca;
+            --status-almost: #fed7aa;
+            --status-free: #d1fae5;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #111827;
+            min-height: 100vh;
+            color: #FFFFFF;
+            padding: 20px;
+            letter-spacing: 0.3px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.75rem;
+            font-weight: 300;
+            color: #111827;
+            letter-spacing: 2px;
+        }
+
+        .contact-info {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+
+        /* Main Layout */
+        .booking-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 4px;
+            padding: 2rem;
+            border: 1px solid var(--gray-200);
+            box-shadow: none;
+        }
+
+        .card h2 {
+            margin-bottom: 1.5rem;
+            color: var(--gray-900);
+            font-size: 1.75rem;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+        }
+
+        /* Selection Panel */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+            color: var(--gray-700);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: none;
+        }
+
+        .lesson-info {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+        }
+
+        .lesson-info strong {
+            color: var(--primary);
+        }
+
+        /* Calendar View Toggle */
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--gray-100);
+            padding: 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .view-toggle button {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            background: transparent;
+            color: var(--gray-600);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .view-toggle button.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Calendar */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-header h3 {
+            font-size: 1.25rem;
+            color: var(--gray-900);
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .calendar-nav button {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--gray-200);
+            background: white;
+            color: var(--gray-700);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-nav button:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .calendar-nav button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Month Calendar */
+        .calendar-month {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-weekday {
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            padding: 0.5rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: white;
+        }
+
+        .calendar-day .date-num {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .calendar-day .status-indicator {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .calendar-day.today {
+            border-color: var(--primary);
+            border-width: 3px;
+        }
+
+        .calendar-day.unavailable {
+            background: var(--status-unavailable);
+            color: var(--gray-500);
+            cursor: not-allowed;
+        }
+
+        .calendar-day.full {
+            background: var(--status-full);
+            color: var(--danger);
+        }
+
+        .calendar-day.almost {
+            background: var(--status-almost);
+            color: #c2410c;
+        }
+
+        .calendar-day.free {
+            background: var(--status-free);
+            color: var(--success);
+        }
+
+        .calendar-day.free:hover,
+        .calendar-day.almost:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-day.selected {
+            border-color: var(--primary);
+            border-width: 3px;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .calendar-day.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        /* Week Calendar */
+        .calendar-week {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .week-day {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .week-day:hover:not(.disabled) {
+            border-color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .week-day.selected {
+            border-color: var(--primary);
+            border-width: 3px;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .week-day.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .week-day-date {
+            flex: 1;
+        }
+
+        .week-day-date .day-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--gray-900);
+        }
+
+        .week-day-date .date-info {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin-top: 0.25rem;
+        }
+
+        .week-day-status {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .week-day-status.unavailable {
+            background: var(--status-unavailable);
+            color: var(--gray-600);
+        }
+
+        .week-day-status.full {
+            background: var(--status-full);
+            color: var(--danger);
+        }
+
+        .week-day-status.almost {
+            background: var(--status-almost);
+            color: #c2410c;
+        }
+
+        .week-day-status.free {
+            background: var(--status-free);
+            color: var(--success);
+        }
+
+        /* Placeholder State */
+        .placeholder-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-500);
+        }
+
+        .placeholder-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .placeholder-state h3 {
+            font-size: 1.25rem;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .placeholder-state p {
+            color: var(--gray-500);
+        }
+
+        /* Time Slots Panel */
+        .slots-panel {
+            display: none;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--gray-200);
+        }
+
+        .slots-panel.visible {
+            display: block;
+        }
+
+        .slots-panel h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--gray-900);
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .time-slot {
+            padding: 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .time-slot:hover:not(.unavailable) {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .time-slot.selected {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+        }
+
+        .time-slot.unavailable {
+            background: var(--gray-100);
+            color: var(--gray-400);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Selection Summary (Sticky Sidebar) */
+        .selection-summary {
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .summary-empty {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--gray-500);
+        }
+
+        .summary-empty svg {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .summary-content {
+            display: none;
+        }
+
+        .summary-content.visible {
+            display: block;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            font-weight: 600;
+        }
+
+        .summary-value {
+            font-size: 1rem;
+            color: var(--gray-900);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* Selected Slots List */
+        .slot-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--gray-50);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .slot-item-info {
+            flex: 1;
+        }
+
+        .slot-item-date {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .slot-item-time {
+            color: var(--gray-600);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .slot-item-remove {
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            box-shadow: none;
+            transition: all 0.2s ease;
+        }
+
+        .slot-item-remove:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .summary-price {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .summary-price .price-label {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-price .price-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-top: 0.25rem;
+        }
+
+        /* Buttons */
+        button {
+            padding: 0.875rem 1.75rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: none;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+            width: 100%;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: var(--gray-100);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: none;
+            padding: 0;
+        }
+
+        .close-btn:hover {
+            background: var(--gray-200);
+            color: var(--gray-900);
+            transform: rotate(90deg);
+        }
+
+        .otp-input {
+            text-align: center;
+            font-size: 1.75rem;
+            letter-spacing: 1rem;
+            padding: 1.25rem;
+            font-weight: 700;
+        }
+
+        .modal-info {
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            color: var(--gray-700);
+            font-size: 0.95rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 2000;
+            display: none;
+            animation: slideInRight 0.3s ease;
+            min-width: 300px;
+            border-left: 4px solid;
+        }
+
+        .toast.show {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast.info {
+            border-left-color: var(--primary);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Legend */
+        .calendar-legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--gray-200);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-500);
+        }
+
+        .spinner {
+            border: 3px solid var(--gray-200);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .booking-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .selection-summary {
+                position: relative;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .calendar-month {
+                gap: 0.25rem;
+            }
+
+            .calendar-day {
+                padding: 0.25rem;
+                font-size: 0.85rem;
+            }
+
+            .calendar-day .date-num {
+                font-size: 0.9rem;
+            }
+
+            .calendar-day .status-indicator {
+                font-size: 0.6rem;
+            }
+
+            .time-slots {
+                grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+                gap: 0.5rem;
+            }
+
+            .time-slot {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Demo Banner */
+        .demo-banner {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            text-align: center;
+            padding: 0.75rem;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .demo-banner.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Demo Mode Banner -->
+    <div id="demoBanner" class="demo-banner">
+        🎮 DEMO MODE - All data is simulated | Toggle demo mode in the JavaScript configuration
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                🚗 DriveScheduler
+            </div>
+            <div class="contact-info">
+                <div style="margin-bottom: 0.25rem;">📞 Contact: +61 400 123 456</div>
+                <div><a href="portal.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">Already have an account? Login to Portal →</a></div>
+            </div>
+        </header>
+
+        <div class="booking-layout">
+            <!-- Main Booking Area -->
+            <div>
+                <!-- Selection Panel -->
+                <div class="card">
+                    <h2>Book Your Driving Lesson</h2>
+                    
+                    <div class="form-group">
+                        <label for="instructorSelect">Select Instructor *</label>
+                        <select id="instructorSelect">
+                            <option value="">-- Choose an instructor --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lessonTypeSelect">Select Lesson Type *</label>
+                        <select id="lessonTypeSelect">
+                            <option value="">-- Choose a lesson type --</option>
+                        </select>
+                        <div id="lessonInfo" class="lesson-info hidden">
+                            <strong>Duration:</strong> <span id="lessonDuration">-</span> minutes<br>
+                            <strong>Price:</strong> $<span id="lessonPrice">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calendar -->
+                <div class="card">
+                    <div class="view-toggle">
+                        <button class="active" data-view="month">Month View</button>
+                        <button data-view="week">Week View</button>
+                    </div>
+
+                    <div id="calendarContainer">
+                        <!-- Placeholder State -->
+                        <div id="placeholderState" class="placeholder-state">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <h3>Select instructor and lesson type</h3>
+                            <p>Choose both options above to view availability</p>
+                        </div>
+
+                        <!-- Loading State -->
+                        <div id="loadingState" class="loading hidden">
+                            <div class="spinner"></div>
+                            <p>Loading availability...</p>
+                        </div>
+
+                        <!-- Calendar Header -->
+                        <div id="calendarHeader" class="calendar-header hidden">
+                            <h3 id="calendarTitle">January 2026</h3>
+                            <div class="calendar-nav">
+                                <button id="prevBtn">← Prev</button>
+                                <button id="nextBtn">Next →</button>
+                            </div>
+                        </div>
+
+                        <!-- Month View -->
+                        <div id="monthView" class="calendar-month hidden"></div>
+
+                        <!-- Week View -->
+                        <div id="weekView" class="calendar-week hidden"></div>
+
+                        <!-- Legend -->
+                        <div id="calendarLegend" class="calendar-legend hidden">
+                            <div class="legend-item">
+                                <div class="legend-box" style="background: var(--status-free);"></div>
+                                <span>Available</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-box" style="background: var(--status-almost);"></div>
+                                <span>Low Availability</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-box" style="background: var(--status-full);"></div>
+                                <span>Fully Booked</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-box" style="background: var(--status-unavailable);"></div>
+                                <span>Unavailable</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time Slots Panel -->
+                    <div id="slotsPanel" class="slots-panel">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="margin: 0;">Available Times - <span id="selectedDateDisplay"></span></h3>
+                            <div id="slotCounter" style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600; font-size: 0.9rem; display: none;">
+                                <span id="slotCountNumber">0</span> selected
+                            </div>
+                        </div>
+                        <div id="timeSlots" class="time-slots"></div>
+                        <div style="margin-top: 1rem; padding: 1rem; background: var(--gray-50); border-radius: 10px; font-size: 0.9rem; color: var(--gray-700);">
+                            💡 <strong>Tip:</strong> Click multiple time slots to book several lessons at once. You can browse different days and keep adding more!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selection Summary Sidebar -->
+            <div class="selection-summary card">
+                <h2>Booking Summary</h2>
+                
+                <div id="summaryEmpty" class="summary-empty">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    <p>Your booking details will appear here</p>
+                </div>
+
+                <div id="summaryContent" class="summary-content">
+                    <div class="summary-item">
+                        <span class="summary-label">Instructor</span>
+                        <span class="summary-value" id="summaryInstructor">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Lesson Type</span>
+                        <span class="summary-value" id="summaryLessonType">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Duration</span>
+                        <span class="summary-value" id="summaryDuration">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Date</span>
+                        <span class="summary-value" id="summaryDate">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Time</span>
+                        <span class="summary-value" id="summaryTime">-</span>
+                    </div>
+
+                    <!-- Selected Slots List (for multiple bookings) -->
+                    <div id="selectedSlotsList" style="margin: 1rem 0; display: none;">
+                        <label style="font-size: 0.85rem; color: var(--gray-600); margin-bottom: 0.5rem;">Selected Lessons:</label>
+                        <div id="slotsListContainer" style="max-height: 200px; overflow-y: auto;"></div>
+                    </div>
+
+                    <div class="summary-price">
+                        <div class="price-label">Total Price</div>
+                        <div class="price-value">$<span id="summaryPrice">0</span></div>
+                    </div>
+
+                    <button id="confirmBookingBtn" class="btn-success" disabled>
+                        Continue to Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP Modal -->
+    <div id="otpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="otpModalTitle">Login / Register</h2>
+                <button class="close-btn" onclick="closeOtpModal()">&times;</button>
+            </div>
+
+            <!-- Phone Input Step -->
+            <div id="phoneStep">
+                <div class="modal-info">
+                    To confirm your booking, please enter your phone number. We'll send you a verification code.
+                </div>
+                <div class="form-group">
+                    <label for="phoneInput">Phone Number</label>
+                    <input type="tel" id="phoneInput" placeholder="+61 400 000 000">
+                </div>
+                <button class="btn-primary" onclick="sendOtp()">Send Code</button>
+            </div>
+
+            <!-- OTP Verification Step -->
+            <div id="otpStep" class="hidden">
+                <div class="modal-info">
+                    We've sent a 6-digit code to <strong id="phoneDisplay"></strong>
+                </div>
+                <div class="form-group">
+                    <label for="otpInput">Enter Code</label>
+                    <input type="text" id="otpInput" class="otp-input" maxlength="6" placeholder="000000">
+                </div>
+                <button class="btn-primary" onclick="verifyOtp()">Verify & Book</button>
+                <button class="btn-primary" onclick="backToPhone()" style="background: var(--gray-500); margin-top: 0.5rem;">
+                    Change Number
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ========================================
+        // CONFIGURATION
+        // ========================================
+        const DEMO_MODE = true; // Set to false for production with real backend
+        const API_BASE_URL = 'http://localhost:8001';
+        const BOOKING_WINDOW_DAYS = 60;
+
+        // ========================================
+        // DEMO DATA
+        // ========================================
+        const DEMO_DATA = {
+            instructors: [
+                { id: 1, name: 'John Smith', phone: '+61 400 111 222' },
+                { id: 2, name: 'Sarah Johnson', phone: '+61 400 333 444' },
+                { id: 3, name: 'Mike Davis', phone: '+61 400 555 666' }
+            ],
+            lessonTypes: [
+                { id: 1, name: 'Basic Driving', duration_minutes: 60, price: 80 },
+                { id: 2, name: 'Highway Driving', duration_minutes: 90, price: 120 },
+                { id: 3, name: 'Parking Practice', duration_minutes: 45, price: 60 },
+                { id: 4, name: 'Manual Transmission', duration_minutes: 60, price: 85 },
+                { id: 5, name: 'Test Preparation', duration_minutes: 120, price: 150 }
+            ]
+        };
+
+        // Generate demo day statuses
+        function generateDemoDayStatuses() {
+            const statuses = {};
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            for (let i = 0; i < BOOKING_WINDOW_DAYS; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                const dateStr = formatDateISO(date);
+                
+                const dayOfWeek = date.getDay();
+                
+                // Weekend = unavailable
+                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    statuses[dateStr] = {
+                        status: 'unavailable',
+                        availableCapacity: 0,
+                        totalCapacity: 0
+                    };
+                } else {
+                    // Random availability for weekdays
+                    const rand = Math.random();
+                    if (rand < 0.15) {
+                        statuses[dateStr] = { status: 'full', availableCapacity: 0, totalCapacity: 8 };
+                    } else if (rand < 0.35) {
+                        statuses[dateStr] = { status: 'almost', availableCapacity: 1, totalCapacity: 8 };
+                    } else {
+                        const available = Math.floor(Math.random() * 5) + 3;
+                        statuses[dateStr] = { status: 'free', availableCapacity: available, totalCapacity: 8 };
+                    }
+                }
+            }
+            
+            return statuses;
+        }
+
+        // Generate demo time slots for a given day
+        function generateDemoTimeSlots(date) {
+            const slots = [];
+            const startHour = 9;
+            const endHour = 17;
+            
+            for (let hour = startHour; hour < endHour; hour++) {
+                for (let minute = 0; minute < 60; minute += 30) {
+                    const slotDate = new Date(date);
+                    slotDate.setHours(hour, minute, 0, 0);
+                    
+                    const endDate = new Date(slotDate);
+                    endDate.setMinutes(slotDate.getMinutes() + (state.selectedLessonType?.duration_minutes || 60));
+                    
+                    // Random availability (70% available)
+                    const available = Math.random() > 0.3;
+                    
+                    slots.push({
+                        startISO: slotDate.toISOString(),
+                        endISO: endDate.toISOString(),
+                        available: available
+                    });
+                }
+            }
+            
+            return slots;
+        }
+
+        // ========================================
+        // STATE
+        // ========================================
+        const state = {
+            instructors: [],
+            lessonTypes: [],
+            selectedInstructorId: null,
+            selectedLessonTypeId: null,
+            selectedLessonType: null,
+            selectedDate: null,
+            selectedSlots: [], // Changed to array for multiple slots
+            holdIds: [], // Array to track multiple holds
+            currentView: 'month',
+            currentMonth: new Date(),
+            dayStatuses: {},
+            availableSlots: [],
+            phone: null,
+            customerId: null
+        };
+
+        // ========================================
+        // API CALLS
+        // ========================================
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            if (DEMO_MODE) {
+                console.log(`[DEMO] API Call: ${method} ${endpoint}`, data);
+                return simulateApiCall(endpoint, method, data);
+            }
+
+            try {
+                const options = {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+
+                if (data && method !== 'GET') {
+                    options.body = JSON.stringify(data);
+                }
+
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || result.message || 'API request failed');
+                }
+
+                return result;
+            } catch (error) {
+                console.error('API Error:', error);
+                showToast(error.message || 'An error occurred', 'error');
+                throw error;
+            }
+        }
+
+        // Simulate API responses in demo mode
+        async function simulateApiCall(endpoint, method, data) {
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 400));
+
+            if (endpoint === '/instructors') {
+                return { instructors: DEMO_DATA.instructors };
+            }
+
+            if (endpoint === '/lesson-types') {
+                return { lesson_types: DEMO_DATA.lessonTypes };
+            }
+
+            if (endpoint.startsWith('/availability/days')) {
+                return { days: Object.entries(state.dayStatuses).map(([date, status]) => ({
+                    date,
+                    ...status
+                })) };
+            }
+
+            if (endpoint.startsWith('/availability/slots')) {
+                const urlParams = new URLSearchParams(endpoint.split('?')[1]);
+                const date = urlParams.get('date');
+                const slots = generateDemoTimeSlots(new Date(date));
+                return { slots };
+            }
+
+            if (endpoint === '/booking/hold') {
+                // Simulate hold creation
+                return {
+                    holdId: 'HOLD_' + Date.now(),
+                    expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString()
+                };
+            }
+
+            if (endpoint === '/auth/send-otp') {
+                // Simulate OTP send
+                console.log('[DEMO] OTP sent to:', data.phone, '| Code: 123456');
+                showToast('Demo OTP: 123456', 'info');
+                return { success: true };
+            }
+
+            if (endpoint === '/auth/verify-otp') {
+                // Accept any 6-digit code in demo mode
+                if (data.otp && data.otp.length === 6) {
+                    return {
+                        success: true,
+                        customerId: 'CUST_' + Date.now()
+                    };
+                } else {
+                    throw new Error('Invalid OTP');
+                }
+            }
+
+            if (endpoint === '/booking/confirm') {
+                // Simulate booking confirmation
+                return {
+                    success: true,
+                    bookingId: 'BOOK_' + Date.now(),
+                    status: 'confirmed'
+                };
+            }
+
+            throw new Error('Unknown endpoint: ' + endpoint);
+        }
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        async function init() {
+            // Show demo banner if in demo mode
+            if (DEMO_MODE) {
+                document.getElementById('demoBanner').classList.add('show');
+            }
+
+            await loadInstructors();
+            await loadLessonTypes();
+            setupEventListeners();
+            
+            const welcomeMsg = DEMO_MODE 
+                ? 'Welcome! 🎮 Demo mode is active - Select an instructor and lesson type to explore'
+                : 'Welcome! Select an instructor and lesson type to get started';
+            showToast(welcomeMsg, 'info');
+        }
+
+        async function loadInstructors() {
+            try {
+                const response = await apiCall('/instructors');
+                state.instructors = response.instructors || response;
+                
+                const select = document.getElementById('instructorSelect');
+                state.instructors.forEach(instructor => {
+                    const option = document.createElement('option');
+                    option.value = instructor.id;
+                    option.textContent = instructor.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Failed to load instructors:', error);
+            }
+        }
+
+        async function loadLessonTypes() {
+            try {
+                const response = await apiCall('/lesson-types');
+                state.lessonTypes = response.lesson_types || response;
+                
+                const select = document.getElementById('lessonTypeSelect');
+                state.lessonTypes.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type.id;
+                    option.textContent = type.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Failed to load lesson types:', error);
+            }
+        }
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+        function setupEventListeners() {
+            document.getElementById('instructorSelect').addEventListener('change', onInstructorChange);
+            document.getElementById('lessonTypeSelect').addEventListener('change', onLessonTypeChange);
+            
+            document.querySelectorAll('.view-toggle button').forEach(btn => {
+                btn.addEventListener('click', (e) => switchView(e.target.dataset.view));
+            });
+
+            document.getElementById('prevBtn').addEventListener('click', navigatePrev);
+            document.getElementById('nextBtn').addEventListener('click', navigateNext);
+            document.getElementById('confirmBookingBtn').addEventListener('click', confirmBooking);
+        }
+
+        function onInstructorChange(e) {
+            state.selectedInstructorId = e.target.value || null;
+            clearSelection();
+            if (state.selectedInstructorId && state.selectedLessonTypeId) {
+                loadAvailability();
+            } else {
+                showPlaceholder();
+            }
+        }
+
+        function onLessonTypeChange(e) {
+            state.selectedLessonTypeId = e.target.value || null;
+            
+            if (state.selectedLessonTypeId) {
+                state.selectedLessonType = state.lessonTypes.find(t => t.id == state.selectedLessonTypeId);
+                document.getElementById('lessonDuration').textContent = state.selectedLessonType.duration_minutes;
+                document.getElementById('lessonPrice').textContent = state.selectedLessonType.price;
+                document.getElementById('lessonInfo').classList.remove('hidden');
+            } else {
+                document.getElementById('lessonInfo').classList.add('hidden');
+                state.selectedLessonType = null;
+            }
+
+            clearSelection();
+            if (state.selectedInstructorId && state.selectedLessonTypeId) {
+                loadAvailability();
+            } else {
+                showPlaceholder();
+            }
+        }
+
+        function clearSelection() {
+            state.selectedDate = null;
+            state.selectedSlots = [];
+            state.holdIds = [];
+            document.getElementById('slotsPanel').classList.remove('visible');
+            updateSummary();
+            updateSlotCounter();
+        }
+
+        // ========================================
+        // CALENDAR
+        // ========================================
+        async function loadAvailability() {
+            showLoading();
+            
+            const today = new Date();
+            const endDate = new Date(today);
+            endDate.setDate(today.getDate() + BOOKING_WINDOW_DAYS);
+
+            const fromStr = formatDateISO(today);
+            const toStr = formatDateISO(endDate);
+
+            try {
+                // Generate demo data if in demo mode
+                if (DEMO_MODE) {
+                    state.dayStatuses = generateDemoDayStatuses();
+                } else {
+                    const response = await apiCall(
+                        `/availability/days?instructorId=${state.selectedInstructorId}&lessonTypeId=${state.selectedLessonTypeId}&from=${fromStr}&to=${toStr}`
+                    );
+                    
+                    state.dayStatuses = {};
+                    (response.days || response).forEach(day => {
+                        state.dayStatuses[day.date] = {
+                            status: day.status,
+                            availableCapacity: day.availableCapacity || 0,
+                            totalCapacity: day.totalCapacity || 0
+                        };
+                    });
+                }
+
+                renderCalendar();
+            } catch (error) {
+                console.error('Failed to load availability:', error);
+                showPlaceholder();
+            }
+        }
+
+        function showPlaceholder() {
+            document.getElementById('placeholderState').classList.remove('hidden');
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('calendarHeader').classList.add('hidden');
+            document.getElementById('monthView').classList.add('hidden');
+            document.getElementById('weekView').classList.add('hidden');
+            document.getElementById('calendarLegend').classList.add('hidden');
+        }
+
+        function showLoading() {
+            document.getElementById('placeholderState').classList.add('hidden');
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('calendarHeader').classList.add('hidden');
+            document.getElementById('monthView').classList.add('hidden');
+            document.getElementById('weekView').classList.add('hidden');
+            document.getElementById('calendarLegend').classList.add('hidden');
+        }
+
+        function renderCalendar() {
+            document.getElementById('placeholderState').classList.add('hidden');
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('calendarHeader').classList.remove('hidden');
+            document.getElementById('calendarLegend').classList.remove('hidden');
+
+            if (state.currentView === 'month') {
+                renderMonthView();
+            } else {
+                renderWeekView();
+            }
+        }
+
+        function renderMonthView() {
+            document.getElementById('monthView').classList.remove('hidden');
+            document.getElementById('weekView').classList.add('hidden');
+
+            const year = state.currentMonth.getFullYear();
+            const month = state.currentMonth.getMonth();
+            
+            document.getElementById('calendarTitle').textContent = 
+                state.currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay()); // Start from Sunday
+
+            const monthView = document.getElementById('monthView');
+            monthView.innerHTML = '';
+
+            // Weekday headers
+            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+                const weekday = document.createElement('div');
+                weekday.className = 'calendar-weekday';
+                weekday.textContent = day;
+                monthView.appendChild(weekday);
+            });
+
+            // Days
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const maxDate = new Date(today);
+            maxDate.setDate(today.getDate() + BOOKING_WINDOW_DAYS);
+
+            for (let i = 0; i < 42; i++) {
+                const currentDate = new Date(startDate);
+                currentDate.setDate(startDate.getDate() + i);
+                
+                const dateStr = formatDateISO(currentDate);
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day';
+                
+                const dateNum = document.createElement('div');
+                dateNum.className = 'date-num';
+                dateNum.textContent = currentDate.getDate();
+                dayEl.appendChild(dateNum);
+
+                // Check if other month
+                if (currentDate.getMonth() !== month) {
+                    dayEl.classList.add('other-month');
+                }
+
+                // Check if today
+                if (currentDate.getTime() === today.getTime()) {
+                    dayEl.classList.add('today');
+                }
+
+                // Check if outside booking window
+                if (currentDate < today || currentDate > maxDate) {
+                    dayEl.classList.add('disabled');
+                } else {
+                    // Apply status
+                    const dayStatus = state.dayStatuses[dateStr];
+                    if (dayStatus) {
+                        dayEl.classList.add(dayStatus.status);
+                        const indicator = document.createElement('div');
+                        indicator.className = 'status-indicator';
+                        
+                        if (dayStatus.status === 'unavailable') {
+                            indicator.textContent = 'Off';
+                        } else if (dayStatus.status === 'full') {
+                            indicator.textContent = 'Full';
+                        } else if (dayStatus.status === 'almost') {
+                            indicator.textContent = 'Low';
+                        } else if (dayStatus.status === 'free') {
+                            indicator.textContent = dayStatus.availableCapacity;
+                        }
+                        
+                        dayEl.appendChild(indicator);
+
+                        // Make clickable if not unavailable or full
+                        if (dayStatus.status !== 'unavailable' && dayStatus.status !== 'full') {
+                            dayEl.style.cursor = 'pointer';
+                            dayEl.onclick = () => selectDate(dateStr, currentDate);
+                        }
+                    } else {
+                        dayEl.classList.add('unavailable');
+                    }
+                }
+
+                // Highlight selected date
+                if (state.selectedDate === dateStr) {
+                    dayEl.classList.add('selected');
+                }
+
+                monthView.appendChild(dayEl);
+            }
+        }
+
+        function renderWeekView() {
+            document.getElementById('monthView').classList.add('hidden');
+            document.getElementById('weekView').classList.remove('hidden');
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const maxDate = new Date(today);
+            maxDate.setDate(today.getDate() + BOOKING_WINDOW_DAYS);
+
+            // Get week start (current month start)
+            const weekStart = new Date(state.currentMonth);
+            weekStart.setDate(1);
+
+            document.getElementById('calendarTitle').textContent = 
+                state.currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            const weekView = document.getElementById('weekView');
+            weekView.innerHTML = '';
+
+            // Show 7 days
+            for (let i = 0; i < 7; i++) {
+                const currentDate = new Date(weekStart);
+                currentDate.setDate(weekStart.getDate() + i);
+                
+                const dateStr = formatDateISO(currentDate);
+                const dayEl = document.createElement('div');
+                dayEl.className = 'week-day';
+
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'week-day-date';
+
+                const dayName = document.createElement('div');
+                dayName.className = 'day-name';
+                dayName.textContent = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
+
+                const dateInfo = document.createElement('div');
+                dateInfo.className = 'date-info';
+                dateInfo.textContent = currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+                dateDiv.appendChild(dayName);
+                dateDiv.appendChild(dateInfo);
+
+                // Status badge
+                const statusDiv = document.createElement('div');
+                statusDiv.className = 'week-day-status';
+
+                if (currentDate < today || currentDate > maxDate) {
+                    dayEl.classList.add('disabled');
+                    statusDiv.classList.add('unavailable');
+                    statusDiv.textContent = 'Outside window';
+                } else {
+                    const dayStatus = state.dayStatuses[dateStr];
+                    if (dayStatus) {
+                        statusDiv.classList.add(dayStatus.status);
+                        
+                        if (dayStatus.status === 'unavailable') {
+                            statusDiv.textContent = 'Unavailable';
+                        } else if (dayStatus.status === 'full') {
+                            statusDiv.textContent = 'Fully Booked';
+                        } else if (dayStatus.status === 'almost') {
+                            statusDiv.textContent = `${dayStatus.availableCapacity} slots`;
+                        } else if (dayStatus.status === 'free') {
+                            statusDiv.textContent = `${dayStatus.availableCapacity} slots`;
+                        }
+
+                        // Make clickable if not unavailable or full
+                        if (dayStatus.status !== 'unavailable' && dayStatus.status !== 'full') {
+                            dayEl.onclick = () => selectDate(dateStr, currentDate);
+                        } else {
+                            dayEl.classList.add('disabled');
+                        }
+                    } else {
+                        dayEl.classList.add('disabled');
+                        statusDiv.classList.add('unavailable');
+                        statusDiv.textContent = 'Unavailable';
+                    }
+                }
+
+                if (state.selectedDate === dateStr) {
+                    dayEl.classList.add('selected');
+                }
+
+                dayEl.appendChild(dateDiv);
+                dayEl.appendChild(statusDiv);
+                weekView.appendChild(dayEl);
+            }
+        }
+
+        function switchView(view) {
+            state.currentView = view;
+            document.querySelectorAll('.view-toggle button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === view);
+            });
+            renderCalendar();
+        }
+
+        function navigatePrev() {
+            if (state.currentView === 'month') {
+                state.currentMonth.setMonth(state.currentMonth.getMonth() - 1);
+            } else {
+                state.currentMonth.setDate(state.currentMonth.getDate() - 7);
+            }
+            renderCalendar();
+        }
+
+        function navigateNext() {
+            if (state.currentView === 'month') {
+                state.currentMonth.setMonth(state.currentMonth.getMonth() + 1);
+            } else {
+                state.currentMonth.setDate(state.currentMonth.getDate() + 7);
+            }
+            renderCalendar();
+        }
+
+        // ========================================
+        // TIME SLOTS
+        // ========================================
+        async function selectDate(dateStr, dateObj) {
+            state.selectedDate = dateStr;
+            // Don't clear selected slots - allow adding from different days
+            
+            renderCalendar(); // Re-render to show selection
+            
+            document.getElementById('selectedDateDisplay').textContent = 
+                dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+            // Load slots
+            try {
+                const response = await apiCall(
+                    `/availability/slots?instructorId=${state.selectedInstructorId}&lessonTypeId=${state.selectedLessonTypeId}&date=${dateStr}`
+                );
+                
+                state.availableSlots = response.slots || response;
+                renderTimeSlots();
+                
+                document.getElementById('slotsPanel').classList.add('visible');
+                
+                // Scroll to slots
+                document.getElementById('slotsPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } catch (error) {
+                console.error('Failed to load slots:', error);
+                showToast('Failed to load time slots', 'error');
+            }
+        }
+
+        function renderTimeSlots() {
+            const container = document.getElementById('timeSlots');
+            container.innerHTML = '';
+
+            if (state.availableSlots.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--gray-500); grid-column: 1 / -1;">No slots available for this day</p>';
+                return;
+            }
+
+            state.availableSlots.forEach(slot => {
+                const slotEl = document.createElement('div');
+                slotEl.className = 'time-slot';
+                
+                const startTime = new Date(slot.startISO);
+                slotEl.textContent = formatTime(startTime);
+
+                if (!slot.available) {
+                    slotEl.classList.add('unavailable');
+                } else {
+                    slotEl.onclick = () => toggleSlot(slot);
+                }
+
+                // Check if this slot is in the selected slots array
+                if (state.selectedSlots.some(s => s.startISO === slot.startISO)) {
+                    slotEl.classList.add('selected');
+                }
+
+                container.appendChild(slotEl);
+            });
+        }
+
+        function toggleSlot(slot) {
+            const index = state.selectedSlots.findIndex(s => s.startISO === slot.startISO);
+            
+            if (index >= 0) {
+                // Deselect - remove from array
+                state.selectedSlots.splice(index, 1);
+                showToast('Slot removed', 'info');
+            } else {
+                // Select - add to array
+                state.selectedSlots.push(slot);
+                const remaining = state.selectedSlots.length;
+                showToast(`Slot added! (${remaining} total) Continue browsing or confirm when ready`, 'success');
+            }
+            
+            renderTimeSlots();
+            updateSummary();
+            updateSlotCounter();
+        }
+
+        function updateSlotCounter() {
+            const counter = document.getElementById('slotCounter');
+            const count = state.selectedSlots.length;
+            
+            if (count > 0) {
+                counter.style.display = 'block';
+                document.getElementById('slotCountNumber').textContent = count;
+            } else {
+                counter.style.display = 'none';
+            }
+        }
+
+        // ========================================
+        // SUMMARY
+        // ========================================
+        function updateSummary() {
+            const hasSelection = state.selectedInstructorId && 
+                                state.selectedLessonTypeId && 
+                                state.selectedSlots.length > 0;
+
+            document.getElementById('summaryEmpty').style.display = hasSelection ? 'none' : 'block';
+            
+            if (hasSelection) {
+                document.getElementById('summaryContent').classList.add('visible');
+                
+                const instructor = state.instructors.find(i => i.id == state.selectedInstructorId);
+                document.getElementById('summaryInstructor').textContent = instructor.name;
+                document.getElementById('summaryLessonType').textContent = state.selectedLessonType.name;
+                document.getElementById('summaryDuration').textContent = state.selectedLessonType.duration_minutes + ' min';
+                
+                // Show slots list if multiple selections
+                if (state.selectedSlots.length > 1) {
+                    document.getElementById('summaryDate').textContent = `${state.selectedSlots.length} lessons`;
+                    document.getElementById('summaryTime').textContent = 'See below';
+                    
+                    // Show detailed list
+                    document.getElementById('selectedSlotsList').style.display = 'block';
+                    renderSelectedSlotsList();
+                } else if (state.selectedSlots.length === 1) {
+                    const slot = state.selectedSlots[0];
+                    const dateObj = new Date(slot.startISO);
+                    document.getElementById('summaryDate').textContent = 
+                        dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+                    
+                    document.getElementById('summaryTime').textContent = formatTime(dateObj);
+                    document.getElementById('selectedSlotsList').style.display = 'none';
+                }
+                
+                // Calculate total price
+                const totalPrice = state.selectedLessonType.price * state.selectedSlots.length;
+                document.getElementById('summaryPrice').textContent = totalPrice;
+                
+                document.getElementById('confirmBookingBtn').disabled = false;
+                
+                // Update button text
+                const btnText = state.selectedSlots.length === 1 
+                    ? 'Continue to Confirm' 
+                    : `Book ${state.selectedSlots.length} Lessons`;
+                document.getElementById('confirmBookingBtn').textContent = btnText;
+            } else {
+                document.getElementById('summaryContent').classList.remove('visible');
+                document.getElementById('confirmBookingBtn').disabled = true;
+                document.getElementById('confirmBookingBtn').textContent = 'Continue to Confirm';
+                document.getElementById('selectedSlotsList').style.display = 'none';
+            }
+        }
+
+        function renderSelectedSlotsList() {
+            const container = document.getElementById('slotsListContainer');
+            container.innerHTML = '';
+
+            // Sort slots by date/time
+            const sortedSlots = [...state.selectedSlots].sort((a, b) => 
+                new Date(a.startISO) - new Date(b.startISO)
+            );
+
+            sortedSlots.forEach((slot, index) => {
+                const slotItem = document.createElement('div');
+                slotItem.className = 'slot-item';
+
+                const info = document.createElement('div');
+                info.className = 'slot-item-info';
+
+                const date = new Date(slot.startISO);
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'slot-item-date';
+                dateDiv.textContent = date.toLocaleDateString('en-US', { 
+                    month: 'short', day: 'numeric', year: 'numeric' 
+                });
+
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'slot-item-time';
+                timeDiv.textContent = formatTime(date);
+
+                info.appendChild(dateDiv);
+                info.appendChild(timeDiv);
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'slot-item-remove';
+                removeBtn.textContent = '×';
+                removeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    removeSlot(slot);
+                };
+
+                slotItem.appendChild(info);
+                slotItem.appendChild(removeBtn);
+                container.appendChild(slotItem);
+            });
+        }
+
+        function removeSlot(slot) {
+            const index = state.selectedSlots.findIndex(s => s.startISO === slot.startISO);
+            if (index >= 0) {
+                state.selectedSlots.splice(index, 1);
+                showToast('Slot removed', 'info');
+                updateSummary();
+                updateSlotCounter();
+                renderTimeSlots(); // Re-render current day's slots
+            }
+        }
+
+        // ========================================
+        // BOOKING CONFIRMATION (OTP FLOW)
+        // ========================================
+        async function confirmBooking() {
+            // First, try to create holds for all selected slots
+            try {
+                const holdPromises = state.selectedSlots.map(slot => 
+                    apiCall('/booking/hold', 'POST', {
+                        instructorId: state.selectedInstructorId,
+                        lessonTypeId: state.selectedLessonTypeId,
+                        startISO: slot.startISO
+                    })
+                );
+
+                const holdResponses = await Promise.all(holdPromises);
+                state.holdIds = holdResponses.map(r => r.holdId || r.hold_id);
+                
+                showToast(`${state.selectedSlots.length} slot(s) reserved`, 'success');
+                
+                // Show OTP modal
+                showOtpModal();
+            } catch (error) {
+                if (error.message.includes('no longer available') || error.message.includes('not available')) {
+                    showToast('One or more slots are no longer available. Please reselect.', 'error');
+                    // Refresh the current day's slots
+                    if (state.selectedDate) {
+                        selectDate(state.selectedDate, new Date(state.selectedDate));
+                    }
+                } else {
+                    showToast('Failed to reserve slots: ' + error.message, 'error');
+                }
+            }
+        }
+
+        function showOtpModal() {
+            document.getElementById('phoneStep').classList.remove('hidden');
+            document.getElementById('otpStep').classList.add('hidden');
+            document.getElementById('otpModal').classList.add('show');
+        }
+
+        function closeOtpModal() {
+            document.getElementById('otpModal').classList.remove('show');
+            // Release holds if they exist
+            if (state.holdIds.length > 0) {
+                // Could call an API to release holds, or let them expire
+                state.holdIds = [];
+            }
+        }
+
+        async function sendOtp() {
+            const phone = document.getElementById('phoneInput').value.trim();
+            if (!phone) {
+                showToast('Please enter a phone number', 'error');
+                return;
+            }
+
+            state.phone = phone;
+
+            try {
+                await apiCall('/auth/send-otp', 'POST', { phone });
+                
+                document.getElementById('phoneDisplay').textContent = phone;
+                document.getElementById('phoneStep').classList.add('hidden');
+                document.getElementById('otpStep').classList.remove('hidden');
+                showToast('Code sent to ' + phone, 'success');
+            } catch (error) {
+                showToast('Failed to send code: ' + error.message, 'error');
+            }
+        }
+
+        function backToPhone() {
+            document.getElementById('otpStep').classList.add('hidden');
+            document.getElementById('phoneStep').classList.remove('hidden');
+        }
+
+        async function verifyOtp() {
+            const otp = document.getElementById('otpInput').value.trim();
+            if (otp.length !== 6) {
+                showToast('Please enter a 6-digit code', 'error');
+                return;
+            }
+
+            try {
+                // Verify OTP
+                const authResponse = await apiCall('/auth/verify-otp', 'POST', {
+                    phone: state.phone,
+                    otp: otp
+                });
+
+                state.customerId = authResponse.customerId || authResponse.customer_id;
+
+                // Confirm all bookings
+                const bookingPromises = state.holdIds.map(holdId =>
+                    apiCall('/booking/confirm', 'POST', {
+                        holdId: holdId,
+                        customerId: state.customerId
+                    })
+                );
+
+                await Promise.all(bookingPromises);
+
+                // Success!
+                document.getElementById('otpModal').classList.remove('show');
+                const count = state.selectedSlots.length;
+                const msg = count === 1 
+                    ? 'Booking confirmed! 🎉' 
+                    : `${count} lessons booked successfully! 🎉`;
+                showToast(msg, 'success');
+
+                // Reset state
+                resetBooking();
+                
+                // Show confirmation message
+                setTimeout(() => {
+                    showToast('Check your phone for booking details', 'info');
+                }, 2000);
+
+            } catch (error) {
+                if (error.message.includes('hold') && error.message.includes('expired')) {
+                    showToast('Time expired. Please select your slots again.', 'error');
+                    closeOtpModal();
+                    // Refresh slots
+                    if (state.selectedDate) {
+                        selectDate(state.selectedDate, new Date(state.selectedDate));
+                    }
+                } else {
+                    showToast('Verification failed: ' + error.message, 'error');
+                }
+            }
+        }
+
+        function resetBooking() {
+            state.selectedDate = null;
+            state.selectedSlots = [];
+            state.holdIds = [];
+            document.getElementById('slotsPanel').classList.remove('visible');
+            document.getElementById('phoneInput').value = '';
+            document.getElementById('otpInput').value = '';
+            updateSummary();
+            updateSlotCounter();
+            renderCalendar();
+        }
+
+        // ========================================
+        // UTILITIES
+        // ========================================
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        function formatDateISO(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
+        }
+
+        // Close modal on outside click
+        document.getElementById('otpModal').addEventListener('click', (e) => {
+            if (e.target.id === 'otpModal') {
+                closeOtpModal();
+            }
+        });
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

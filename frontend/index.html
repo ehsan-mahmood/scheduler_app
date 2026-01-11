@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveScheduler - Multi-Tenant Booking System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .business-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .business-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: block;
+        }
+        .business-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .business-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .business-card p {
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        .business-card .url {
+            font-family: monospace;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            background: rgba(255,255,255,0.1);
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .demo-section {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .demo-section h3 {
+            margin-bottom: 10px;
+        }
+        .demo-section a {
+            color: white;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .info-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .info-item strong {
+            color: #667eea;
+        }
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #dc2626;
+        }
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 DriveScheduler</h1>
+            <p>Multi-Tenant Driving School Booking System</p>
+        </div>
+
+        <div class="card">
+            <h2>📍 Available Businesses</h2>
+            <p>Click on a business below to access their booking page:</p>
+            
+            <div class="business-list">
+                <a href="/acme-driving/" class="business-card">
+                    <h3>Acme Driving Academy</h3>
+                    <p>Professional driving instruction with experienced instructors</p>
+                    <div class="url">/acme-driving/</div>
+                </a>
+
+                <a href="/city-school/" class="business-card">
+                    <h3>City Driving School</h3>
+                    <p>Learn to drive in the city with confidence</p>
+                    <div class="url">/city-school/</div>
+                </a>
+            </div>
+
+            <div class="demo-section">
+                <h3>🎮 Demo Mode</h3>
+                <p>
+                    Want to test without a backend? 
+                    <a href="driving_school_app.html">Open in Demo Mode</a>
+                </p>
+                <p style="margin-top: 10px; font-size: 0.9rem;">
+                    Demo mode uses simulated data and doesn't require a backend connection.
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔧 How It Works</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Path-Based Routing</strong><br>
+                    URL structure: <code>/business-slug/</code><br>
+                    Automatically detects business from path
+                </div>
+                <div class="info-item">
+                    <strong>Auto Configuration</strong><br>
+                    No hardcoded business names<br>
+                    Same file serves all businesses
+                </div>
+                <div class="info-item">
+                    <strong>API Integration</strong><br>
+                    Calls: <code>/business/api/...</code><br>
+                    Multi-tenant backend support
+                </div>
+                <div class="info-item">
+                    <strong>Demo Fallback</strong><br>
+                    No business in URL = Demo mode<br>
+                    Perfect for testing & presentations
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🚀 Quick Start</h2>
+            <ol style="line-height: 1.8; margin-left: 20px;">
+                <li><strong>Start Backend:</strong> <code>cd backend && php -S localhost:8001 router.php</code></li>
+                <li><strong>Start Frontend:</strong> <code>cd frontend && python -m http.server 8000</code></li>
+                <li><strong>Visit:</strong> <code>http://localhost:8000/acme-driving/</code></li>
+            </ol>
+        </div>
+
+        <div class="card">
+            <h2>📁 Directory Structure</h2>
+            <pre style="background: #f8fafc; padding: 15px; border-radius: 8px; overflow-x: auto;">
+frontend/
+├── acme-driving/
+│   ├── index.html                    ← Same booking app
+│   └── driving_school_app.html       ← Same file, different URL
+├── city-school/
+│   ├── index.html                    ← Same booking app
+│   └── driving_school_app.html       ← Same file, different URL
+├── driving_school_app.html           ← Demo mode (no business path)
+└── test-detection.html               ← URL detection tester
+            </pre>
+        </div>
+
+        <div class="card">
+            <h2>🧪 Testing Tools</h2>
+            <p>Use these tools to test and debug the system:</p>
+            <ul style="margin: 15px 0 15px 20px; line-height: 1.8;">
+                <li><a href="test-detection.html" style="color: #667eea; font-weight: bold;">URL Detection Test</a> - See how URLs are parsed</li>
+                <li><a href="../backend/tests/api_test_page.html" style="color: #667eea; font-weight: bold;">API Test Page</a> - Test backend endpoints</li>
+                <li><strong>Browser Console:</strong> Press F12 to see detection logs</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>📚 Documentation available in <code>frontend/*.md</code> files</p>
+            <p style="margin-top: 10px;">
+                <a href="URL_ROUTING_GUIDE.md" style="color: white;">URL Routing Guide</a> • 
+                <a href="TROUBLESHOOTING.md" style="color: white;">Troubleshooting</a> • 
+                <a href="API_QUICK_REFERENCE.md" style="color: white;">API Reference</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+

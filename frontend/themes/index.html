@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveScheduler - Theme Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .theme-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .theme-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .theme-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        .theme-vibe {
+            font-style: italic;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .color-swatch {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-description {
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .best-for {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .best-for-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .best-for-list {
+            list-style: none;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .best-for-list li {
+            padding: 0.25rem 0;
+        }
+
+        .best-for-list li::before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-portal {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-booking {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .docs-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .docs-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+
+        .docs-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .doc-link {
+            padding: 1rem;
+            background: #f1f5f9;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #475569;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .doc-link:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .doc-icon {
+            font-size: 1.5rem;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 3rem;
+            opacity: 0.8;
+        }
+
+        /* Theme-specific color swatches */
+        .theme1-primary { background: #1E3A8A; }
+        .theme1-secondary { background: #3B82F6; }
+        .theme1-success { background: #16A34A; }
+
+        .theme2-primary { background: #0EA5E9; }
+        .theme2-accent { background: #22C55E; }
+        .theme2-bg { background: #F1F5F9; border: 1px solid #cbd5e1; }
+
+        .theme3-primary { background: #111827; }
+        .theme3-accent { background: #D97706; }
+        .theme3-bg { background: #F9FAFB; border: 1px solid #e5e7eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚗 DriveScheduler</h1>
+            <p class="subtitle">Choose Your Perfect Theme</p>
+        </header>
+
+        <div class="theme-grid">
+            <!-- Theme 1 -->
+            <div class="theme-card">
+                <div class="theme-header">
+                    <span class="theme-number">Theme 1</span>
+                    <h2 class="theme-title">Trust & Professional</h2>
+                    <p class="theme-vibe">Calm, reliable, serious business</p>
+                </div>
+
+                <div class="color-palette">
+                    <div class="color-swatch theme1-primary" title="Primary: Deep Blue"></div>
+                    <div class="color-swatch theme1-secondary" title="Secondary: Blue"></div>
+                    <div class="color-swatch theme1-success" title="Success: Green"></div>
+                </div>
+
+                <p class="theme-description">
+                    Flat design with minimal gradients. Features subtle borders, light shadows, and a professional color scheme perfect for business applications.
+                </p>
+
+                <div class="best-for">
+                    <div class="best-for-title">Best For</div>
+                    <ul class="best-for-list">
+                        <li>Instructor portals</li>
+                        <li>Admin dashboards</li>
+                        <li>Payment flows</li>
+                    </ul>
+                </div>
+
+                <div class="button-group">
+                    <a href="theme1-trust-professional/portal.html" class="btn btn-portal">Portal</a>
+                    <a href="theme1-trust-professional/driving_school_app.html" class="btn btn-booking">Booking</a>
+                </div>
+            </div>
+
+            <!-- Theme 2 -->
+            <div class="theme-card">
+                <div class="theme-header">
+                    <span class="theme-number">Theme 2</span>
+                    <h2 class="theme-title">Modern Friendly</h2>
+                    <p class="theme-vibe">Approachable, modern, less intimidating</p>
+                </div>
+
+                <div class="color-palette">
+                    <div class="color-swatch theme2-primary" title="Primary: Sky Blue"></div>
+                    <div class="color-swatch theme2-accent" title="Accent: Green"></div>
+                    <div class="color-swatch theme2-bg" title="Background: Light Grey"></div>
+                </div>
+
+                <p class="theme-description">
+                    Rounded elements with larger buttons and inputs. Friendly, approachable design optimized for customer-facing interfaces and mobile experiences.
+                </p>
+
+                <div class="best-for">
+                    <div class="best-for-title">Best For</div>
+                    <ul class="best-for-list">
+                        <li>Student booking</li>
+                        <li>Mobile-first views</li>
+                        <li>Customer interfaces</li>
+                    </ul>
+                </div>
+
+                <div class="button-group">
+                    <a href="theme2-modern-friendly/portal.html" class="btn btn-portal">Portal</a>
+                    <a href="theme2-modern-friendly/driving_school_app.html" class="btn btn-booking">Booking</a>
+                </div>
+            </div>
+
+            <!-- Theme 3 -->
+            <div class="theme-card">
+                <div class="theme-header">
+                    <span class="theme-number">Theme 3</span>
+                    <h2 class="theme-title">Premium / High-End</h2>
+                    <p class="theme-vibe">Premium, confident, top-tier</p>
+                </div>
+
+                <div class="color-palette">
+                    <div class="color-swatch theme3-primary" title="Primary: Charcoal"></div>
+                    <div class="color-swatch theme3-accent" title="Accent: Amber"></div>
+                    <div class="color-swatch theme3-bg" title="Background: Off-white"></div>
+                </div>
+
+                <p class="theme-description">
+                    Strong contrast with minimal colors. Typography-driven design with thin dividers and sharp edges. Perfect for premium branding.
+                </p>
+
+                <div class="best-for">
+                    <div class="best-for-title">Best For</div>
+                    <ul class="best-for-list">
+                        <li>Marketing landing</li>
+                        <li>Instructor profiles</li>
+                        <li>Premium packages</li>
+                    </ul>
+                </div>
+
+                <div class="button-group">
+                    <a href="theme3-premium/portal.html" class="btn btn-portal">Portal</a>
+                    <a href="theme3-premium/driving_school_app.html" class="btn btn-booking">Booking</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="docs-section">
+            <h2 class="docs-title">📚 Documentation</h2>
+            <div class="docs-links">
+                <a href="README.md" class="doc-link">
+                    <span class="doc-icon">📖</span>
+                    <span>Overview</span>
+                </a>
+                <a href="THEME_COMPARISON.md" class="doc-link">
+                    <span class="doc-icon">📊</span>
+                    <span>Comparison Guide</span>
+                </a>
+                <a href="theme1-trust-professional/README.md" class="doc-link">
+                    <span class="doc-icon">🔵</span>
+                    <span>Theme 1 Details</span>
+                </a>
+                <a href="theme2-modern-friendly/README.md" class="doc-link">
+                    <span class="doc-icon">🟢</span>
+                    <span>Theme 2 Details</span>
+                </a>
+                <a href="theme3-premium/README.md" class="doc-link">
+                    <span class="doc-icon">⚫</span>
+                    <span>Theme 3 Details</span>
+                </a>
+                <a href="../ui_theming_suggestions_for_driving_school_app.md" class="doc-link">
+                    <span class="doc-icon">💡</span>
+                    <span>Design Rationale</span>
+                </a>
+            </div>
+        </div>
+
+        <footer>
+            <p>All themes are fully functional with demo mode enabled</p>
+            <p style="margin-top: 0.5rem; font-size: 0.875rem;">Original files remain unchanged in the parent directory</p>
+        </footer>
+    </div>
+</body>
+</html>
+

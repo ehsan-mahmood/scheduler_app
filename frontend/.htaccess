@@ -1,0 +1,20 @@
+# Multi-Tenant Frontend Routing
+# Routes all business URLs to the same HTML file
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Don't rewrite if the file exists (for CSS, JS, images, etc.)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Route all requests to router.php
+    RewriteRule ^(.*)$ router.php [QSA,L]
+</IfModule>
+
+# Security: Prevent directory listing
+Options -Indexes
+
+# Set default charset
+AddDefaultCharset UTF-8
+

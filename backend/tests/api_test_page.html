@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Tenant API Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        
+        .business-selector {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .business-selector label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .business-selector select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .test-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .test-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .test-card p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+        
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .response {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .response pre {
+            margin: 0;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #1f2937;
+        }
+        
+        .error {
+            border-left-color: #ef4444;
+        }
+        
+        .success {
+            border-left-color: #10b981;
+        }
+        
+        .info-box {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+            color: #78350f;
+        }
+        
+        .info-box code {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 Multi-Tenant API Tester</h1>
+        
+        <div class="info-box">
+            <h4>ℹ️ Important Setup Instructions</h4>
+            <ul>
+                <li>Update <code>API_BASE_URL</code> below to your actual backend URL</li>
+                <li>Make sure your backend API is running</li>
+                <li>Make sure you've loaded the dummy data SQL</li>
+                <li>Select a business to test its API endpoints</li>
+            </ul>
+        </div>
+        
+        <div class="business-selector">
+            <label>Select Business to Test:</label>
+            <select id="businessSelect">
+                <option value="main">Sydney Driving School (main)</option>
+                <option value="acme-driving">Acme Driving Academy (acme-driving)</option>
+                <option value="city-school">City Driving School (city-school)</option>
+            </select>
+        </div>
+        
+        <div class="test-grid">
+            <!-- Test 1: Get Config -->
+            <div class="test-card">
+                <h3>1. Get Business Config</h3>
+                <p>GET /{business}/api/config</p>
+                <button onclick="testGetConfig()">Test Config</button>
+                <div id="config-response" class="response" style="display:none;"></div>
+            </div>
+            
+            <!-- Test 2: Get Lesson Types -->
+            <div class="test-card">
+                <h3>2. Get Lesson Types</h3>
+                <p>GET /{business}/api/lesson-types</p>
+                <button onclick="testGetLessonTypes()">Test Lesson Types</button>
+                <div id="lesson-types-response" class="response" style="display:none;"></div>
+            </div>
+            
+            <!-- Test 3: Get Instructors -->
+            <div class="test-card">
+                <h3>3. Get Instructors</h3>
+                <p>GET /{business}/api/instructors</p>
+                <button onclick="testGetInstructors()">Test Instructors</button>
+                <div id="instructors-response" class="response" style="display:none;"></div>
+            </div>
+            
+            <!-- Test 4: Register Student -->
+            <div class="test-card">
+                <h3>4. Register Student</h3>
+                <p>POST /{business}/api/register</p>
+                <div class="input-group">
+                    <label>Phone Number:</label>
+                    <input type="text" id="register-phone" value="+61400999888" placeholder="+61400999888">
+                </div>
+                <button onclick="testRegister()">Register & Get OTP</button>
+                <div id="register-response" class="response" style="display:none;"></div>
+            </div>
+            
+            <!-- Test 5: Verify OTP -->
+            <div class="test-card">
+                <h3>5. Verify OTP</h3>
+                <p>POST /{business}/api/verify-otp</p>
+                <div class="input-group">
+                    <label>Phone Number:</label>
+                    <input type="text" id="verify-phone" value="+61400999888">
+                </div>
+                <div class="input-group">
+                    <label>OTP Code:</label>
+                    <input type="text" id="verify-otp" placeholder="123456">
+                </div>
+                <button onclick="testVerifyOTP()">Verify OTP</button>
+                <div id="verify-response" class="response" style="display:none;"></div>
+            </div>
+            
+            <!-- Test 6: Check Availability -->
+            <div class="test-card">
+                <h3>6. Check Availability</h3>
+                <p>GET /{business}/api/availability</p>
+                <div class="input-group">
+                    <label>Instructor ID:</label>
+                    <select id="availability-instructor">
+                        <option value="">Select instructor first</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Date:</label>
+                    <input type="date" id="availability-date">
+                </div>
+                <button onclick="testAvailability()">Check Availability</button>
+                <div id="availability-response" class="response" style="display:none;"></div>
+            </div>
+            
+            <!-- Test 7: Book Lesson -->
+            <div class="test-card">
+                <h3>7. Book Lesson</h3>
+                <p>POST /{business}/api/book-lesson</p>
+                <div class="input-group">
+                    <label>Phone (verified):</label>
+                    <input type="text" id="book-phone" value="+61400999888">
+                </div>
+                <div class="input-group">
+                    <label>Lesson Type:</label>
+                    <select id="book-lesson-type">
+                        <option value="">Select lesson type first</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Instructor:</label>
+                    <select id="book-instructor">
+                        <option value="">Select instructor first</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Date & Time:</label>
+                    <input type="datetime-local" id="book-datetime">
+                </div>
+                <button onclick="testBookLesson()">Book Lesson</button>
+                <div id="book-response" class="response" style="display:none;"></div>
+            </div>
+            
+            <!-- Test 8: Submit Deposit -->
+            <div class="test-card">
+                <h3>8. Submit Deposit</h3>
+                <p>POST /{business}/api/submit-deposit</p>
+                <div class="input-group">
+                    <label>Lesson ID:</label>
+                    <input type="text" id="deposit-lesson-id" placeholder="From booking response">
+                </div>
+                <div class="input-group">
+                    <label>PayID Reference:</label>
+                    <input type="text" id="deposit-reference" value="PAY123456" placeholder="PAY123456">
+                </div>
+                <button onclick="testSubmitDeposit()">Submit Deposit</button>
+                <div id="deposit-response" class="response" style="display:none;"></div>
+            </div>
+            
+            <!-- Test 9: Admin Dashboard -->
+            <div class="test-card">
+                <h3>9. Admin Dashboard</h3>
+                <p>GET /{business}/api/admin/dashboard</p>
+                <button onclick="testAdminDashboard()">Get Dashboard</button>
+                <div id="dashboard-response" class="response" style="display:none;"></div>
+            </div>
+            
+            <!-- Test 10: Pending Deposits -->
+            <div class="test-card">
+                <h3>10. Pending Deposits</h3>
+                <p>GET /{business}/api/admin/pending-deposits</p>
+                <button onclick="testPendingDeposits()">Get Pending</button>
+                <div id="pending-response" class="response" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURATION =====
+        // UPDATE THIS TO YOUR BACKEND URL
+        const API_BASE_URL = 'http://localhost:8001'; // Change to your backend URL
+        
+        // ===== UTILITY FUNCTIONS =====
+        function getCurrentBusiness() {
+            return document.getElementById('businessSelect').value;
+        }
+        
+        function getApiUrl(endpoint) {
+            const business = getCurrentBusiness();
+            return `${API_BASE_URL}/${business}${endpoint}`;
+        }
+        
+        function showResponse(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `response ${isError ? 'error' : 'success'}`;
+            element.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+        
+        async function makeRequest(url, method = 'GET', body = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                if (body) {
+                    options.body = JSON.stringify(body);
+                }
+                
+                const response = await fetch(url, options);
+                const data = await response.json();
+                return { data, status: response.status };
+            } catch (error) {
+                return { 
+                    data: { error: error.message }, 
+                    status: 0,
+                    isError: true 
+                };
+            }
+        }
+        
+        // ===== TEST FUNCTIONS =====
+        async function testGetConfig() {
+            const url = getApiUrl('/api/config');
+            const { data, status } = await makeRequest(url);
+            showResponse('config-response', data, status !== 200);
+        }
+        
+        async function testGetLessonTypes() {
+            const url = getApiUrl('/api/lesson-types');
+            const { data, status } = await makeRequest(url);
+            showResponse('lesson-types-response', data, status !== 200);
+            
+            // Populate lesson type dropdowns
+            if (data.lesson_types) {
+                const select1 = document.getElementById('book-lesson-type');
+                select1.innerHTML = '<option value="">Select...</option>';
+                data.lesson_types.forEach(lt => {
+                    select1.innerHTML += `<option value="${lt.id}">${lt.name} - $${lt.price}</option>`;
+                });
+            }
+        }
+        
+        async function testGetInstructors() {
+            const url = getApiUrl('/api/instructors');
+            const { data, status } = await makeRequest(url);
+            showResponse('instructors-response', data, status !== 200);
+            
+            // Populate instructor dropdowns
+            if (data.instructors) {
+                const select1 = document.getElementById('availability-instructor');
+                const select2 = document.getElementById('book-instructor');
+                
+                select1.innerHTML = '<option value="">Select...</option>';
+                select2.innerHTML = '<option value="">Select...</option>';
+                
+                data.instructors.forEach(inst => {
+                    const option = `<option value="${inst.id}">${inst.name}</option>`;
+                    select1.innerHTML += option;
+                    select2.innerHTML += option;
+                });
+            }
+        }
+        
+        async function testRegister() {
+            const phone = document.getElementById('register-phone').value;
+            const url = getApiUrl('/api/register');
+            const { data, status } = await makeRequest(url, 'POST', { phone });
+            showResponse('register-response', data, status !== 200);
+            
+            // Auto-fill OTP in verify section
+            if (data.otp) {
+                document.getElementById('verify-phone').value = phone;
+                document.getElementById('verify-otp').value = data.otp;
+            }
+        }
+        
+        async function testVerifyOTP() {
+            const phone = document.getElementById('verify-phone').value;
+            const otp = document.getElementById('verify-otp').value;
+            const url = getApiUrl('/api/verify-otp');
+            const { data, status } = await makeRequest(url, 'POST', { phone, otp });
+            showResponse('verify-response', data, status !== 200);
+            
+            // Auto-fill phone in booking section
+            if (data.success) {
+                document.getElementById('book-phone').value = phone;
+            }
+        }
+        
+        async function testAvailability() {
+            const instructorId = document.getElementById('availability-instructor').value;
+            const date = document.getElementById('availability-date').value;
+            
+            if (!instructorId || !date) {
+                showResponse('availability-response', { error: 'Please select instructor and date' }, true);
+                return;
+            }
+            
+            const url = getApiUrl(`/api/availability?instructor_id=${instructorId}&date=${date}`);
+            const { data, status } = await makeRequest(url);
+            showResponse('availability-response', data, status !== 200);
+        }
+        
+        async function testBookLesson() {
+            const phone = document.getElementById('book-phone').value;
+            const lessonTypeId = document.getElementById('book-lesson-type').value;
+            const instructorId = document.getElementById('book-instructor').value;
+            const datetime = document.getElementById('book-datetime').value;
+            
+            if (!phone || !lessonTypeId || !instructorId || !datetime) {
+                showResponse('book-response', { error: 'Please fill all fields' }, true);
+                return;
+            }
+            
+            const scheduledAt = datetime.replace('T', ' ') + ':00';
+            
+            const url = getApiUrl('/api/book-lesson');
+            const { data, status } = await makeRequest(url, 'POST', {
+                phone,
+                lesson_type_id: lessonTypeId,
+                instructor_id: instructorId,
+                scheduled_at: scheduledAt
+            });
+            showResponse('book-response', data, status !== 200);
+            
+            // Auto-fill lesson ID in deposit section
+            if (data.lesson_id) {
+                document.getElementById('deposit-lesson-id').value = data.lesson_id;
+            }
+        }
+        
+        async function testSubmitDeposit() {
+            const lessonId = document.getElementById('deposit-lesson-id').value;
+            const payidReference = document.getElementById('deposit-reference').value;
+            
+            if (!lessonId || !payidReference) {
+                showResponse('deposit-response', { error: 'Please fill all fields' }, true);
+                return;
+            }
+            
+            const url = getApiUrl('/api/submit-deposit');
+            const { data, status } = await makeRequest(url, 'POST', {
+                lesson_id: lessonId,
+                payid_reference: payidReference
+            });
+            showResponse('deposit-response', data, status !== 200);
+        }
+        
+        async function testAdminDashboard() {
+            const url = getApiUrl('/api/admin/dashboard');
+            const { data, status } = await makeRequest(url);
+            showResponse('dashboard-response', data, status !== 200);
+        }
+        
+        async function testPendingDeposits() {
+            const url = getApiUrl('/api/admin/pending-deposits');
+            const { data, status } = await makeRequest(url);
+            showResponse('pending-response', data, status !== 200);
+        }
+        
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('availability-date').value = today;
+            
+            // Set tomorrow at 10 AM for booking
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(10, 0, 0, 0);
+            const tomorrowStr = tomorrow.toISOString().slice(0, 16);
+            document.getElementById('book-datetime').value = tomorrowStr;
+            
+            // Reload data when business changes
+            document.getElementById('businessSelect').addEventListener('change', () => {
+                // Clear responses
+                document.querySelectorAll('.response').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                // Reload basic data
+                testGetLessonTypes();
+                testGetInstructors();
+            });
+            
+            // Initial load
+            testGetLessonTypes();
+            testGetInstructors();
+        });
+    </script>
+</body>
+</html>

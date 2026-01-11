@@ -1,0 +1,3451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveScheduler Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --sidebar-width: 260px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            min-height: 100vh;
+        }
+
+        /* Demo Banner */
+        .demo-banner {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            text-align: center;
+            padding: 0.75rem;
+            font-weight: 600;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .demo-banner.show {
+            display: block;
+        }
+
+        /* Login/Register Screens */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-header p {
+            color: var(--gray-600);
+        }
+
+        /* Portal Layout */
+        .portal-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .portal-layout.with-banner {
+            padding-top: 48px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .portal-layout.with-banner .sidebar {
+            top: 48px;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .sidebar-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-user {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--gray-900);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            text-transform: capitalize;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--gray-700);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            background: var(--gray-50);
+        }
+
+        .top-bar {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .portal-layout.with-banner .top-bar {
+            top: 48px;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .content-area {
+            padding: 2rem;
+            max-width: 1400px;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        .stat-card.warning::before {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .stat-card.success::before {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .stat-card.danger::before {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--gray-900);
+        }
+
+        .stat-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin-top: 0.5rem;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 0.95rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Buttons */
+        button, .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        button:hover:not(:disabled), .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 2px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .link-button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+            font-size: 0.95rem;
+        }
+
+        .link-button:hover {
+            color: var(--primary-dark);
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        th {
+            background: var(--gray-50);
+            font-weight: 700;
+            color: var(--gray-700);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        td button {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.875rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            gap: 0.375rem;
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-confirmed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-confirmed::before {
+            background: #10b981;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-pending::before {
+            background: #f59e0b;
+        }
+
+        .status-canceled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-canceled::before {
+            background: #ef4444;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            display: none;
+            animation: slideInRight 0.3s ease;
+            min-width: 300px;
+            border-left: 4px solid;
+        }
+
+        .toast.show {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast.info {
+            border-left-color: var(--primary);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-dialog {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: var(--gray-900);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-500);
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--gray-100);
+            color: var(--gray-900);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            color: var(--gray-700);
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        /* Calendar View Styles */
+        .calendar-view {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--gray-200);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .calendar-day-header {
+            background: var(--gray-100);
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 0.5rem;
+            min-height: 100px;
+            position: relative;
+        }
+
+        .calendar-day.other-month {
+            background: var(--gray-50);
+            color: var(--gray-400);
+        }
+
+        .calendar-day.today {
+            background: var(--primary-light);
+        }
+
+        .calendar-day-number {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .calendar-lesson {
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .calendar-lesson:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .calendar-lesson.confirmed {
+            background: var(--success);
+        }
+
+        .calendar-lesson.pending {
+            background: var(--warning);
+        }
+
+        .calendar-lesson.canceled {
+            background: var(--gray-400);
+            text-decoration: line-through;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .content-area {
+                padding: 1rem;
+            }
+
+            .auth-card {
+                padding: 2rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-btn {
+            display: none;
+            background: var(--gray-100);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-card {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-action-card:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .quick-action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .quick-action-title {
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .quick-action-desc {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+    </style>
+</head>
+<body>
+    <!-- Mode Banner (visible on all screens) -->
+    <div id="demoBanner" style="display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 10000; color: white; padding: 12px 20px; text-align: center; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <span id="demoBannerText">🎓 Portal - Demo Mode</span>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>🚗 DriveScheduler</h1>
+                <p>Portal Login</p>
+            </div>
+
+            <!-- Demo Mode Quick Login -->
+            <div id="demoQuickLogin" class="hidden" style="margin-bottom: 2rem; padding: 1.5rem; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%); border-radius: 12px; border-left: 4px solid #10b981;">
+                <div style="font-weight: 600; color: var(--gray-900); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>🎮</span>
+                    <span>Demo Mode - Quick Login</span>
+                </div>
+                <div style="display: grid; gap: 0.75rem;">
+                    <button type="button" class="btn-outline" style="width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center;" onclick="quickLogin('student')">
+                        <span><strong>👨‍🎓 Student</strong> - Alice Johnson</span>
+                        <span style="font-size: 0.85rem; color: var(--gray-600);">→</span>
+                    </button>
+                    <button type="button" class="btn-outline" style="width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center;" onclick="quickLogin('instructor')">
+                        <span><strong>👨‍🏫 Instructor</strong> - John Smith</span>
+                        <span style="font-size: 0.85rem; color: var(--gray-600);">→</span>
+                    </button>
+                    <button type="button" class="btn-outline" style="width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center;" onclick="quickLogin('admin')">
+                        <span><strong>👔 Admin</strong> - Admin User</span>
+                        <span style="font-size: 0.85rem; color: var(--gray-600);">→</span>
+                    </button>
+                </div>
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gray-200); font-size: 0.85rem; color: var(--gray-600);">
+                    Or use manual login below with any phone + password: <strong>demo123</strong>
+                </div>
+            </div>
+
+            <form id="loginForm" action="javascript:void(0);">
+                <div class="form-group">
+                    <label for="loginPhone">Phone Number</label>
+                    <input type="tel" id="loginPhone" placeholder="+61 400 000 000" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%;">Login</button>
+            </form>
+
+            <div class="text-center" style="margin-top: 1.5rem; color: var(--gray-600);">
+                <p>Don't have an account? <button class="link-button" onclick="showRegister()">Register</button></p>
+                <p style="margin-top: 0.5rem;"><button class="link-button" onclick="alert('Contact admin for password reset')">Forgot password?</button></p>
+                <p style="margin-top: 1rem;"><a href="driving_school_app.html" style="color: var(--primary);">← Back to Public Booking</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Selection Screen -->
+    <div id="roleSelectionScreen" class="auth-container hidden">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Choose your account type</p>
+            </div>
+
+            <div style="display: grid; gap: 1rem; margin-bottom: 2rem;">
+                <button type="button" class="btn-outline" style="width: 100%; padding: 1.5rem; text-align: left; display: flex; flex-direction: column; gap: 0.5rem;" onclick="showRegisterForm('student')">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span style="font-size: 2rem;">👨‍🎓</span>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 700; font-size: 1.1rem; color: var(--gray-900);">Student Account</div>
+                            <div style="font-size: 0.875rem; color: var(--gray-600);">Book and manage your driving lessons</div>
+                        </div>
+                        <span style="font-size: 1.5rem; color: var(--gray-400);">→</span>
+                    </div>
+                </button>
+
+                <button type="button" class="btn-outline" style="width: 100%; padding: 1.5rem; text-align: left; display: flex; flex-direction: column; gap: 0.5rem;" onclick="showRegisterForm('instructor')">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span style="font-size: 2rem;">👨‍🏫</span>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 700; font-size: 1.1rem; color: var(--gray-900);">Instructor Account</div>
+                            <div style="font-size: 0.875rem; color: var(--gray-600);">Manage your schedule and students</div>
+                        </div>
+                        <span style="font-size: 1.5rem; color: var(--gray-400);">→</span>
+                    </div>
+                </button>
+            </div>
+
+            <div class="text-center" style="color: var(--gray-600); padding-top: 1.5rem; border-top: 1px solid var(--gray-200);">
+                <p>Already have an account? <button class="link-button" onclick="showLogin()">Login</button></p>
+                <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+                    Students can also register through <a href="driving_school_app.html" style="color: var(--primary);">public booking page</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Screen -->
+    <div id="registerScreen" class="auth-container hidden">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1 id="registerTitle">Create Account</h1>
+                <p id="registerSubtitle">Fill in your details</p>
+            </div>
+
+            <form id="registerForm" action="javascript:void(0);">
+                <input type="hidden" id="registerRole" value="">
+                
+                <div class="form-group">
+                    <label for="registerName">Full Name</label>
+                    <input type="text" id="registerName" placeholder="John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPhone">Phone Number</label>
+                    <input type="tel" id="registerPhone" placeholder="+61 400 000 000" required>
+                </div>
+
+                <div class="form-group" id="emailGroup">
+                    <label for="registerEmail">Email <span style="color: var(--gray-500); font-weight: normal;">(Optional)</span></label>
+                    <input type="email" id="registerEmail" placeholder="john@example.com">
+                    <small style="display: block; margin-top: 0.5rem; color: var(--gray-600); font-size: 0.875rem;">
+                        Recommended for instructors
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" placeholder="Choose a password" required minlength="6">
+                    <small style="display: block; margin-top: 0.5rem; color: var(--gray-600); font-size: 0.875rem;">
+                        Minimum 6 characters
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPasswordConfirm">Confirm Password</label>
+                    <input type="password" id="registerPasswordConfirm" placeholder="Re-enter password" required>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%;">Create Account</button>
+            </form>
+
+            <div class="text-center" style="margin-top: 1.5rem; color: var(--gray-600);">
+                <button class="link-button" onclick="showRoleSelection()">← Back to account type</button>
+                <p style="margin-top: 0.5rem;">Already have an account? <button class="link-button" onclick="showLogin()">Login</button></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portal Layout -->
+    <div id="portalLayout" class="portal-layout hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🚗 DriveScheduler</div>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">User Name</div>
+                    <div class="user-role" id="userRole">student</div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav" id="sidebarNav">
+                <!-- Navigation items populated by JavaScript -->
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn-secondary" style="width: 100%;" onclick="handleLogout()">
+                    <span>🚪</span> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="top-bar">
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+                <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                <div></div>
+            </div>
+
+            <!-- Demo Mode Banner -->
+            <div id="demoBanner" style="display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 20px; text-align: center; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <span id="demoBannerText">🎓 Portal - Demo Mode</span>
+            </div>
+
+            <div class="content-area" id="contentArea">
+                <!-- Content populated by JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Modal Dialog -->
+    <div id="modalOverlay" class="modal-overlay" onclick="if(event.target === this) closeModal()">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="modalTitle">Confirm Action</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                Are you sure?
+            </div>
+            <div class="modal-footer" id="modalFooter">
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" id="modalConfirmBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // CONFIGURATION
+        // ========================================
+        
+        /**
+         * Auto-detect business from URL
+         * Same logic as driving_school_app.html
+         */
+        function detectBusinessSlug() {
+            // Check URL path first (e.g., /acme-driving/ or /acme-driving/portal.html)
+            const pathname = window.location.pathname;
+            const pathParts = pathname.split('/').filter(p => p);
+            
+            console.log('[Business Detection] Pathname:', pathname);
+            console.log('[Business Detection] Path parts:', pathParts);
+            
+            if (pathParts.length > 0) {
+                const firstSegment = pathParts[0];
+                console.log('[Business Detection] First segment:', firstSegment);
+                
+                // If first segment is a file (has extension), no business in path
+                if (firstSegment.includes('.')) {
+                    console.log('[Business Detection] First segment is a file, checking subdomain...');
+                    // Check subdomain fallback
+                } else {
+                    // First segment doesn't have extension, treat as business slug
+                    if (/^[a-z0-9-]+$/.test(firstSegment)) {
+                        console.log('[Business Detection] Found business slug:', firstSegment);
+                        return firstSegment;
+                    } else {
+                        console.log('[Business Detection] First segment does not match business slug pattern');
+                    }
+                }
+            }
+            
+            // Check subdomain (e.g., acme-driving.example.com)
+            const hostname = window.location.hostname;
+            const parts = hostname.split('.');
+            console.log('[Business Detection] Hostname:', hostname, 'Parts:', parts);
+            if (parts.length >= 3 && parts[0] !== 'www' && parts[0] !== 'localhost') {
+                console.log('[Business Detection] Found business slug from subdomain:', parts[0]);
+                return parts[0];
+            }
+            
+            console.log('[Business Detection] No business slug detected');
+            return null;
+        }
+        
+        // Detect business from URL
+        const DETECTED_BUSINESS = detectBusinessSlug();
+        
+        /**
+         * Auto-detect API base URL from current hostname
+         * This allows mobile devices to connect using IP address
+         */
+        function detectApiBaseUrl() {
+            const hostname = window.location.hostname;
+            const port = 8001; // Backend port
+            
+            // If accessed via IP address, use that IP for API
+            // If accessed via localhost, use localhost
+            // If accessed via domain, use that domain
+            return `http://${hostname}:${port}`;
+        }
+        
+        // Configuration
+        const CONFIG = {
+            // Manual override - set this to force a specific business
+            // Set to null to auto-detect from URL, or set to a business slug to force it
+            FORCE_BUSINESS_SLUG: null, // Change to 'acme-driving' to force production mode
+            
+            // Fallback business for demo mode
+            FALLBACK_BUSINESS_SLUG: 'acme-driving',
+            
+            // API Base URL - auto-detected from current hostname
+            // Override this if you need a different backend URL
+            API_BASE_URL: detectApiBaseUrl(), // Auto-detects: http://192.168.1.7:8001 or http://localhost:8001
+        };
+        
+        // Determine final business slug and mode
+        const BUSINESS_SLUG = CONFIG.FORCE_BUSINESS_SLUG || DETECTED_BUSINESS || null;
+        const DEMO_MODE = BUSINESS_SLUG === null; // Auto demo mode if no business
+        
+        // Use fallback for testing if in demo mode
+        const EFFECTIVE_BUSINESS_SLUG = BUSINESS_SLUG || CONFIG.FALLBACK_BUSINESS_SLUG;
+        
+        // Log configuration on startup
+        console.log('🎓 Portal Configuration:', {
+            pathname: window.location.pathname,
+            hostname: window.location.hostname,
+            detectedBusiness: DETECTED_BUSINESS,
+            forcedBusiness: CONFIG.FORCE_BUSINESS_SLUG,
+            effectiveBusinessSlug: EFFECTIVE_BUSINESS_SLUG,
+            demoMode: DEMO_MODE,
+            apiBaseUrl: CONFIG.API_BASE_URL,
+            currentUrl: window.location.href
+        });
+
+        // ========================================
+        // DEMO DATA
+        // ========================================
+        const DEMO_USERS = {
+            student: {
+                id: 1,
+                name: 'Alice Johnson',
+                phone: '+61400111222',
+                password: 'demo123',
+                role: 'student'
+            },
+            instructor: {
+                id: 2,
+                name: 'John Smith',
+                phone: '+61400333444',
+                password: 'demo123',
+                role: 'instructor'
+            },
+            admin: {
+                id: 3,
+                name: 'Admin User',
+                phone: '+61400555666',
+                password: 'demo123',
+                role: 'admin'
+            }
+        };
+
+        const DEMO_BOOKINGS = [
+            {
+                id: 1,
+                studentId: 1,
+                studentName: 'Alice Johnson',
+                studentPhone: '+61400111222',
+                instructorId: 2,
+                instructorName: 'John Smith',
+                lessonType: 'Basic Driving',
+                date: '2026-01-15',
+                time: '10:00 AM',
+                status: 'confirmed',
+                price: 80,
+                depositStatus: 'paid',
+                notes: 'Student is progressing well. Needs more practice with parallel parking.'
+            },
+            {
+                id: 2,
+                studentId: 1,
+                studentName: 'Alice Johnson',
+                studentPhone: '+61400111222',
+                instructorId: 2,
+                instructorName: 'John Smith',
+                lessonType: 'Highway Driving',
+                date: '2026-01-18',
+                time: '2:00 PM',
+                status: 'pending',
+                price: 120,
+                depositStatus: 'pending',
+                notes: ''
+            },
+            {
+                id: 3,
+                studentId: 4,
+                studentName: 'Bob Wilson',
+                studentPhone: '+61400555777',
+                instructorId: 2,
+                instructorName: 'John Smith',
+                lessonType: 'Parking Practice',
+                date: '2026-01-20',
+                time: '11:00 AM',
+                status: 'confirmed',
+                price: 60,
+                depositStatus: 'paid',
+                notes: ''
+            },
+            {
+                id: 4,
+                studentId: 5,
+                studentName: 'Carol Davis',
+                studentPhone: '+61400888999',
+                instructorId: 2,
+                instructorName: 'John Smith',
+                lessonType: 'Test Preparation',
+                date: '2026-01-22',
+                time: '3:00 PM',
+                status: 'confirmed',
+                price: 150,
+                depositStatus: 'paid',
+                notes: ''
+            },
+            {
+                id: 5,
+                studentId: 4,
+                studentName: 'Bob Wilson',
+                studentPhone: '+61400555777',
+                instructorId: 2,
+                instructorName: 'John Smith',
+                lessonType: 'Basic Driving',
+                date: '2025-12-10',
+                time: '9:00 AM',
+                status: 'confirmed',
+                price: 80,
+                depositStatus: 'paid',
+                notes: 'First lesson. Student is nervous but eager to learn. Covered basic controls.'
+            },
+            {
+                id: 6,
+                studentId: 4,
+                studentName: 'Bob Wilson',
+                studentPhone: '+61400555777',
+                instructorId: 2,
+                instructorName: 'John Smith',
+                lessonType: 'City Driving',
+                date: '2025-12-17',
+                time: '10:00 AM',
+                status: 'confirmed',
+                price: 90,
+                depositStatus: 'paid',
+                notes: 'Improving confidence. Good lane control. Needs work on roundabouts.'
+            },
+            {
+                id: 7,
+                studentId: 5,
+                studentName: 'Carol Davis',
+                studentPhone: '+61400888999',
+                instructorId: 2,
+                instructorName: 'John Smith',
+                lessonType: 'Highway Driving',
+                date: '2025-11-20',
+                time: '2:00 PM',
+                status: 'confirmed',
+                price: 120,
+                depositStatus: 'paid',
+                notes: 'Excellent highway skills. Ready for test soon.'
+            },
+            {
+                id: 8,
+                studentId: 6,
+                studentName: 'David Lee',
+                studentPhone: '+61400222333',
+                instructorId: 2,
+                instructorName: 'John Smith',
+                lessonType: 'Basic Driving',
+                date: '2026-01-16',
+                time: '1:00 PM',
+                status: 'confirmed',
+                price: 80,
+                depositStatus: 'paid',
+                notes: ''
+            }
+        ];
+
+        // Student summary data for instructor's students page
+        const DEMO_STUDENTS = [
+            {
+                id: 1,
+                name: 'Alice Johnson',
+                phone: '+61400111222',
+                totalLessons: 2,
+                completedLessons: 0,
+                upcomingLessons: 2,
+                lastLessonDate: '2026-01-15',
+                lastNote: 'Student is progressing well. Needs more practice with parallel parking.',
+                status: 'active'
+            },
+            {
+                id: 4,
+                name: 'Bob Wilson',
+                phone: '+61400555777',
+                totalLessons: 3,
+                completedLessons: 2,
+                upcomingLessons: 1,
+                lastLessonDate: '2025-12-17',
+                lastNote: 'Improving confidence. Good lane control. Needs work on roundabouts.',
+                status: 'active'
+            },
+            {
+                id: 5,
+                name: 'Carol Davis',
+                phone: '+61400888999',
+                totalLessons: 2,
+                completedLessons: 1,
+                upcomingLessons: 1,
+                lastLessonDate: '2025-11-20',
+                lastNote: 'Excellent highway skills. Ready for test soon.',
+                status: 'active'
+            },
+            {
+                id: 6,
+                name: 'David Lee',
+                phone: '+61400222333',
+                totalLessons: 1,
+                completedLessons: 0,
+                upcomingLessons: 1,
+                lastLessonDate: '2026-01-16',
+                lastNote: '',
+                status: 'active'
+            }
+        ];
+
+        // ========================================
+        // STATE
+        // ========================================
+        const state = {
+            currentUser: null,
+            currentPage: 'dashboard',
+            showCalendar: true,
+            calendarDate: new Date()
+        };
+
+        // ========================================
+        // NAVIGATION CONFIG
+        // ========================================
+        const NAV_CONFIG = {
+            student: [
+                { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+                { id: 'lessons', icon: '📚', label: 'My Lessons' },
+                { id: 'payments', icon: '💳', label: 'Payments' },
+                { id: 'profile', icon: '👤', label: 'Profile' }
+            ],
+            instructor: [
+                { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+                { id: 'schedule', icon: '📅', label: 'Schedule' },
+                { id: 'students', icon: '👥', label: 'Students' },
+                { id: 'availability', icon: '⏰', label: 'Availability' },
+                { id: 'profile', icon: '👤', label: 'Profile' }
+            ],
+            admin: [
+                { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+                { id: 'bookings', icon: '📚', label: 'All Bookings' },
+                { id: 'deposits', icon: '💰', label: 'Deposits' },
+                { id: 'instructors', icon: '👨‍🏫', label: 'Instructors' },
+                { id: 'lesson-types', icon: '📝', label: 'Lesson Types' }
+            ]
+        };
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        function init() {
+            console.log('🚀 Initializing portal...');
+            console.log('Configuration:', {
+                demoMode: DEMO_MODE,
+                businessSlug: EFFECTIVE_BUSINESS_SLUG,
+                detectedBusiness: DETECTED_BUSINESS
+            });
+            
+            // Update demo banner
+            const demoBanner = document.getElementById('demoBanner');
+            const demoBannerText = document.getElementById('demoBannerText');
+            
+            if (DEMO_MODE) {
+                demoBanner.style.display = 'block';
+                demoBannerText.textContent = `🎓 Portal - Demo Mode | Business: ${EFFECTIVE_BUSINESS_SLUG}`;
+                document.getElementById('demoQuickLogin')?.classList.remove('hidden');
+            } else {
+                demoBanner.style.display = 'block';
+                demoBanner.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                demoBannerText.textContent = `🎓 Portal - Production Mode | Business: ${EFFECTIVE_BUSINESS_SLUG}`;
+            }
+
+            setupEventListeners();
+            checkStoredSession();
+            console.log('✅ Initialization complete');
+        }
+
+        // Quick login for demo mode
+        async function quickLogin(role) {
+            const user = DEMO_USERS[role];
+            if (!user) return;
+
+            // Fill in the form
+            document.getElementById('loginPhone').value = user.phone;
+            document.getElementById('loginPassword').value = user.password;
+
+            // Trigger login
+            try {
+                const response = await apiCall('/auth/login', 'POST', {
+                    phone: user.phone,
+                    password: user.password
+                });
+
+                state.currentUser = response.user;
+                localStorage.setItem('driveSchedulerUser', JSON.stringify(response.user));
+
+                showToast(`Welcome, ${response.user.name}!`, 'success');
+                showPortal();
+            } catch (error) {
+                showToast(error.message || 'Login failed', 'error');
+            }
+        }
+
+        function checkStoredSession() {
+            const stored = localStorage.getItem('driveSchedulerUser');
+            if (stored) {
+                state.currentUser = JSON.parse(stored);
+                showPortal();
+            }
+        }
+
+        function setupEventListeners() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            } else {
+                console.error('Login form not found!');
+            }
+            
+            if (registerForm) {
+                registerForm.addEventListener('submit', handleRegister);
+            } else {
+                console.error('Register form not found!');
+            }
+        }
+
+        // ========================================
+        // AUTH
+        // ========================================
+        async function handleLogin(e) {
+            console.log('handleLogin called');
+            e.preventDefault();
+
+            const phone = document.getElementById('loginPhone').value;
+            const password = document.getElementById('loginPassword').value;
+
+            console.log('Attempting login with:', phone);
+
+            try {
+                // Use new portal login endpoint
+                const response = await apiCall('/api/portal/login', 'POST', { phone, password });
+                console.log('Login response:', response);
+                
+                state.currentUser = response.user;
+                localStorage.setItem('driveSchedulerUser', JSON.stringify(response.user));
+
+                showToast(`Welcome back, ${response.user.name}!`, 'success');
+                showPortal();
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast(error.message || 'Login failed', 'error');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+
+            const role = document.getElementById('registerRole').value;
+            const name = document.getElementById('registerName').value;
+            const phone = document.getElementById('registerPhone').value;
+            const email = document.getElementById('registerEmail')?.value || '';
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+
+            if (!role) {
+                showToast('Please select an account type', 'error');
+                showRoleSelection();
+                return;
+            }
+
+            if (password.length < 6) {
+                showToast('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+
+            try {
+                console.log('Registering with role:', role);
+                
+                // Use new portal register endpoint
+                const response = await apiCall('/api/portal/register', 'POST', { 
+                    name, 
+                    phone, 
+                    email,
+                    password,
+                    role: role // Include role in registration
+                });
+                
+                console.log('Registration response:', response);
+                
+                // Ensure the user object has the correct role from response
+                const user = {
+                    id: response.user.id,
+                    name: response.user.name,
+                    phone: response.user.phone,
+                    email: response.user.email || '',
+                    role: response.user.role || role // Use role from response, fallback to form value
+                };
+                
+                console.log('Setting user with role:', user.role);
+                
+                state.currentUser = user;
+                localStorage.setItem('driveSchedulerUser', JSON.stringify(user));
+
+                showToast(`Account created! Welcome, ${user.name}!`, 'success');
+                showPortal();
+            } catch (error) {
+                console.error('Registration error:', error);
+                showToast(error.message || 'Registration failed', 'error');
+            }
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                state.currentUser = null;
+                localStorage.removeItem('driveSchedulerUser');
+                
+                document.getElementById('portalLayout').classList.add('hidden');
+                document.getElementById('loginScreen').classList.remove('hidden');
+                
+                showToast('Logged out successfully', 'info');
+            }
+        }
+
+        function showLogin() {
+            document.getElementById('registerScreen').classList.add('hidden');
+            document.getElementById('roleSelectionScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+
+        function showRegister() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('registerScreen').classList.add('hidden');
+            document.getElementById('roleSelectionScreen').classList.remove('hidden');
+        }
+
+        function showRoleSelection() {
+            document.getElementById('registerScreen').classList.add('hidden');
+            document.getElementById('roleSelectionScreen').classList.remove('hidden');
+        }
+
+        function showRegisterForm(role) {
+            document.getElementById('roleSelectionScreen').classList.add('hidden');
+            document.getElementById('registerScreen').classList.remove('hidden');
+            
+            // Set the role
+            document.getElementById('registerRole').value = role;
+            
+            // Update form title and subtitle based on role
+            const title = document.getElementById('registerTitle');
+            const subtitle = document.getElementById('registerSubtitle');
+            const emailGroup = document.getElementById('emailGroup');
+            
+            if (role === 'student') {
+                title.textContent = 'Create Student Account';
+                subtitle.textContent = 'Register to book and manage your driving lessons';
+                emailGroup.style.display = 'none'; // Hide email for students
+            } else {
+                title.textContent = 'Create Instructor Account';
+                subtitle.textContent = 'Register to manage your schedule and students';
+                emailGroup.style.display = 'block'; // Show email for instructors
+            }
+        }
+
+        // ========================================
+        // PORTAL
+        // ========================================
+        function showPortal() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('registerScreen').classList.add('hidden');
+            document.getElementById('portalLayout').classList.remove('hidden');
+
+            // Update user info
+            document.getElementById('userName').textContent = state.currentUser.name;
+            document.getElementById('userRole').textContent = state.currentUser.role;
+            document.getElementById('userAvatar').textContent = state.currentUser.name.charAt(0).toUpperCase();
+
+            // Render navigation
+            renderNavigation();
+
+            // Load dashboard
+            navigateTo('dashboard');
+        }
+
+        function renderNavigation() {
+            const nav = document.getElementById('sidebarNav');
+            const items = NAV_CONFIG[state.currentUser.role] || [];
+
+            nav.innerHTML = items.map(item => `
+                <a class="nav-item ${item.id === state.currentPage ? 'active' : ''}" onclick="navigateTo('${item.id}')">
+                    <span class="nav-icon">${item.icon}</span>
+                    <span>${item.label}</span>
+                </a>
+            `).join('');
+        }
+
+        function navigateTo(page) {
+            state.currentPage = page;
+            renderNavigation();
+            loadPage(page);
+        }
+
+        function loadPage(page) {
+            const role = state.currentUser.role;
+            const pageTitle = NAV_CONFIG[role].find(item => item.id === page)?.label || 'Dashboard';
+            
+            document.getElementById('pageTitle').textContent = pageTitle;
+
+            // Route to appropriate page renderer
+            if (page === 'dashboard') {
+                if (role === 'student') renderStudentDashboard();
+                else if (role === 'instructor') renderInstructorDashboard();
+                else if (role === 'admin') renderAdminDashboard();
+            } else if (page === 'lessons') {
+                renderStudentLessons();
+            } else if (page === 'payments') {
+                renderStudentPayments();
+            } else if (page === 'schedule') {
+                renderInstructorSchedule();
+            } else if (page === 'students') {
+                renderInstructorStudents();
+            } else if (page === 'availability') {
+                renderInstructorAvailability();
+            } else if (page === 'bookings') {
+                renderAdminBookings();
+            } else if (page === 'deposits') {
+                renderAdminDeposits();
+            } else if (page === 'instructors') {
+                renderAdminInstructors();
+            } else if (page === 'profile') {
+                renderProfile();
+            } else if (page === 'lesson-types') {
+                renderAdminLessonTypes();
+            } else if (page === 'profile') {
+                renderProfile();
+            }
+        }
+
+        // ========================================
+        // STUDENT PAGES
+        // ========================================
+        async function renderStudentDashboard() {
+            const bookings = await getStudentBookings();
+            const upcoming = bookings.filter(b => b.status !== 'canceled');
+            const nextLesson = upcoming[0];
+            const pendingDeposits = bookings.filter(b => b.depositStatus === 'pending').length;
+
+            const content = `
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Next Lesson</div>
+                        <div class="stat-value">${nextLesson ? nextLesson.date : 'None'}</div>
+                        <div class="stat-subtitle">${nextLesson ? nextLesson.time + ' - ' + nextLesson.lessonType : 'No upcoming lessons'}</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-label">Pending Deposits</div>
+                        <div class="stat-value">${pendingDeposits}</div>
+                        <div class="stat-subtitle">Awaiting payment</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-label">Total Lessons</div>
+                        <div class="stat-value">${bookings.length}</div>
+                        <div class="stat-subtitle">All time</div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <div class="quick-action-card" onclick="window.location.href='driving_school_app.html'">
+                        <div class="quick-action-icon">📅</div>
+                        <div class="quick-action-title">Book a Lesson</div>
+                        <div class="quick-action-desc">Schedule your next driving lesson</div>
+                    </div>
+                    <div class="quick-action-card" onclick="navigateTo('payments')">
+                        <div class="quick-action-icon">💳</div>
+                        <div class="quick-action-title">Submit Deposit</div>
+                        <div class="quick-action-desc">Pay for pending lessons</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Upcoming Lessons</h3>
+                        <button class="btn-primary btn-sm" onclick="navigateTo('lessons')">View All</button>
+                    </div>
+                    ${renderBookingsTable(upcoming.slice(0, 3), 'student')}
+                </div>
+            `;
+
+            document.getElementById('contentArea').innerHTML = content;
+        }
+
+        async function renderStudentLessons() {
+            const bookings = await getStudentBookings();
+
+            const content = `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">All My Lessons</h3>
+                        <a href="driving_school_app.html" class="btn-success btn-sm">+ Book New Lesson</a>
+                    </div>
+                    ${renderBookingsTable(bookings, 'student')}
+                </div>
+            `;
+
+            document.getElementById('contentArea').innerHTML = content;
+        }
+
+        async function renderStudentPayments() {
+            const bookings = await getStudentBookings();
+            const pending = bookings.filter(b => b.depositStatus === 'pending');
+
+            const content = `
+                <div class="card">
+                    <h3 class="card-title">Pending Deposits</h3>
+                    ${pending.length === 0 ? '<p class="empty-state">No pending deposits</p>' : renderDepositsTable(pending)}
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Payment History</h3>
+                    ${renderDepositsTable(bookings.filter(b => b.depositStatus === 'paid'))}
+                </div>
+            `;
+
+            document.getElementById('contentArea').innerHTML = content;
+        }
+
+        // ========================================
+        // INSTRUCTOR PAGES
+        // ========================================
+        async function renderInstructorDashboard() {
+            const bookings = await getInstructorBookings();
+            
+            // Store bookings for cancelBooking function
+            window.currentBookingsList = bookings;
+            const today = new Date().toISOString().split('T')[0];
+            const todayLessons = bookings.filter(b => b.date === today);
+            const thisWeek = bookings.length;
+            const upcoming = bookings.filter(b => b.status === 'confirmed').length;
+            const totalStudents = DEMO_STUDENTS.length;
+
+            const content = `
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Today's Lessons</div>
+                        <div class="stat-value">${todayLessons.length}</div>
+                        <div class="stat-subtitle">${todayLessons.length} scheduled</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-label">This Week</div>
+                        <div class="stat-value">${thisWeek}</div>
+                        <div class="stat-subtitle">Total lessons</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-label">Upcoming</div>
+                        <div class="stat-value">${upcoming}</div>
+                        <div class="stat-subtitle">Confirmed lessons</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Students</div>
+                        <div class="stat-value">${totalStudents}</div>
+                        <div class="stat-subtitle">Active students</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <div class="quick-action-card" onclick="navigateTo('schedule')">
+                        <div class="quick-action-icon">📅</div>
+                        <div class="quick-action-title">View Schedule</div>
+                        <div class="quick-action-desc">Calendar & list view</div>
+                    </div>
+                    <div class="quick-action-card" onclick="navigateTo('students')">
+                        <div class="quick-action-icon">👥</div>
+                        <div class="quick-action-title">My Students</div>
+                        <div class="quick-action-desc">${totalStudents} students</div>
+                    </div>
+                </div>
+
+                <!-- Today's Lessons Execution View -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📍 Today's Lessons</h3>
+                        <button class="btn-primary btn-sm" onclick="navigateTo('schedule')">View Full Schedule</button>
+                    </div>
+                    ${todayLessons.length > 0 ? renderTodayLessonsTable(todayLessons) : `
+                        <div class="empty-state">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                            <div style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">No lessons today</div>
+                            <div style="color: var(--gray-600);">Enjoy your day off!</div>
+                        </div>
+                    `}
+                </div>
+
+                <!-- Upcoming This Week -->
+                ${bookings.length > 0 ? `
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Upcoming This Week</h3>
+                        </div>
+                        ${renderBookingsTable(bookings.slice(0, 5), 'instructor')}
+                    </div>
+                ` : ''}
+            `;
+
+            document.getElementById('contentArea').innerHTML = content;
+        }
+
+        function renderTodayLessonsTable(lessons) {
+            return `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Student</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Quick Actions</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${lessons.map(lesson => `
+                                <tr>
+                                    <td><strong>${lesson.time}</strong></td>
+                                    <td>
+                                        <div style="font-weight: 600;">${lesson.studentName}</div>
+                                        <div style="font-size: 0.875rem; color: var(--gray-600);">${lesson.studentPhone}</div>
+                                    </td>
+                                    <td>${lesson.lessonType}</td>
+                                    <td><span class="status-badge status-${lesson.status}">${lesson.status}</span></td>
+                                    <td>
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <a href="tel:${lesson.studentPhone}" class="btn-success btn-sm" style="text-decoration: none;">📞</a>
+                                            <a href="sms:${lesson.studentPhone}" class="btn-primary btn-sm" style="text-decoration: none;">💬</a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            ${lesson.status === 'confirmed' ? `<button class="btn-success btn-sm" onclick="startLesson(${lesson.id})">Start</button>` : ''}
+                                            <button class="btn-warning btn-sm" onclick="viewDetails(${lesson.id})">Details</button>
+                                            <button class="btn-secondary btn-sm" onclick="editLessonNotes(${lesson.id})">Notes</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function editLessonNotes(lessonId) {
+            const lesson = DEMO_BOOKINGS.find(b => b.id === lessonId);
+            if (!lesson) return;
+
+            const body = `
+                <div style="display: grid; gap: 1rem;">
+                    <div style="padding: 1rem; background: var(--gray-50); border-radius: 8px;">
+                        <strong>${lesson.date}</strong> at ${lesson.time}<br>
+                        Student: ${lesson.studentName}<br>
+                        Lesson: ${lesson.lessonType}
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Lesson Notes</label>
+                        <textarea id="lessonNotesInput" 
+                                  style="width: 100%; min-height: 150px; padding: 0.75rem; border: 1px solid var(--gray-300); border-radius: 6px; font-family: inherit; resize: vertical;"
+                                  placeholder="Add notes about this lesson...">${lesson.notes || ''}</textarea>
+                        <div style="font-size: 0.875rem; color: var(--gray-600); margin-top: 0.5rem;">
+                            💡 Notes are automatically saved
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalTitle').textContent = 'Edit Lesson Notes';
+            document.getElementById('modalBody').innerHTML = body;
+            document.getElementById('modalFooter').innerHTML = `
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveLessonNotes(${lessonId})">Save Notes</button>
+            `;
+            document.getElementById('modalOverlay').classList.add('show');
+
+            // Setup autosave
+            const textarea = document.getElementById('lessonNotesInput');
+            let saveTimeout;
+            textarea.addEventListener('input', () => {
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(() => {
+                    lesson.notes = textarea.value;
+                    showToast('Notes saved', 'success');
+                }, 2000);
+            });
+        }
+
+        function saveLessonNotes(lessonId) {
+            const lesson = DEMO_BOOKINGS.find(b => b.id === lessonId);
+            const notes = document.getElementById('lessonNotesInput').value;
+            if (lesson) {
+                lesson.notes = notes;
+                showToast('Notes saved successfully', 'success');
+            }
+            closeModal();
+        }
+
+        async function renderInstructorSchedule() {
+            const bookings = await getInstructorBookings();
+            
+            // Store bookings for cancelBooking function
+            window.currentBookingsList = bookings;
+
+            // Initialize calendar state if not exists
+            if (!state.calendarDate) {
+                state.calendarDate = new Date();
+            }
+
+            const content = `
+                <div class="card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 class="card-title">My Schedule</h3>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-secondary btn-sm" onclick="toggleCalendarView()">
+                                <span id="viewToggleText">${state.showCalendar ? 'List View' : 'Calendar View'}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="scheduleContent">
+                        ${state.showCalendar ? renderCalendarView(bookings) : renderScheduleList(bookings)}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('contentArea').innerHTML = content;
+        }
+
+        function toggleCalendarView() {
+            state.showCalendar = !state.showCalendar;
+            renderInstructorSchedule();
+        }
+
+        function renderScheduleList(bookings) {
+            return `
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Status</label>
+                        <select>
+                            <option>All</option>
+                            <option>Confirmed</option>
+                            <option>Pending</option>
+                        </select>
+                    </div>
+                </div>
+                ${renderBookingsTable(bookings, 'instructor')}
+            `;
+        }
+
+        function renderCalendarView(bookings) {
+            const currentDate = state.calendarDate;
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - startDate.getDay());
+            
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            let calendarHTML = `
+                <div class="calendar-view">
+                    <div class="calendar-header">
+                        <h3 style="margin: 0;">${monthNames[month]} ${year}</h3>
+                        <div class="calendar-nav">
+                            <button class="btn-secondary btn-sm" onclick="changeMonth(-1)">← Prev</button>
+                            <button class="btn-secondary btn-sm" onclick="changeMonth(0)">Today</button>
+                            <button class="btn-secondary btn-sm" onclick="changeMonth(1)">Next →</button>
+                        </div>
+                    </div>
+                    
+                    <div class="calendar-grid">
+                        ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => 
+                            `<div class="calendar-day-header">${day}</div>`
+                        ).join('')}
+            `;
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            for (let i = 0; i < 42; i++) {
+                const date = new Date(startDate);
+                date.setDate(date.getDate() + i);
+                
+                const dateStr = date.toISOString().split('T')[0];
+                const isOtherMonth = date.getMonth() !== month;
+                const isToday = date.getTime() === today.getTime();
+                
+                const dayBookings = bookings.filter(b => b.date === dateStr);
+                
+                let dayClass = 'calendar-day';
+                if (isOtherMonth) dayClass += ' other-month';
+                if (isToday) dayClass += ' today';
+                
+                calendarHTML += `
+                    <div class="${dayClass}">
+                        <div class="calendar-day-number">${date.getDate()}</div>
+                        ${dayBookings.map(b => `
+                            <div class="calendar-lesson ${b.status}" onclick="viewDetails(${b.id})" title="${b.time} - ${b.studentName}">
+                                ${b.time} ${b.studentName.split(' ')[0]}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            calendarHTML += `
+                    </div>
+                </div>
+            `;
+            
+            return calendarHTML;
+        }
+
+        function changeMonth(delta) {
+            if (delta === 0) {
+                state.calendarDate = new Date();
+            } else {
+                state.calendarDate.setMonth(state.calendarDate.getMonth() + delta);
+            }
+            renderInstructorSchedule();
+        }
+
+        async function renderInstructorStudents() {
+            // Use /api/portal/students endpoint
+            let students = [];
+            
+            try {
+                const response = await apiCall('/api/portal/students');
+                students = response.students || [];
+                
+                // Transform API response to match frontend format
+                students = students.map(s => ({
+                    id: s.id,
+                    name: s.name || 'Unnamed Student',
+                    phone: s.phone,
+                    totalLessons: s.total_lessons || 0,
+                    completedLessons: s.completed_lessons || 0,
+                    upcomingLessons: (s.total_lessons || 0) - (s.completed_lessons || 0),
+                    lastLessonDate: s.last_lesson_date ? new Date(s.last_lesson_date).toLocaleDateString() : null,
+                    lastNote: '', // Note: This would need a separate API call to get lesson notes
+                    status: s.otp_verified ? 'verified' : 'pending',
+                    otpVerified: s.otp_verified || false
+                }));
+            } catch (error) {
+                console.error('Failed to load students:', error);
+                // Fallback to demo data in demo mode
+                if (DEMO_MODE) {
+                    students = DEMO_STUDENTS.filter(s => s.totalLessons > 0);
+                } else {
+                    showToast('Failed to load students: ' + error.message, 'error');
+                }
+            }
+            
+            const content = `
+                <div class="card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <h3 class="card-title" style="margin: 0;">My Students</h3>
+                        <div style="display: flex; gap: 0.75rem; align-items: center;">
+                            <input type="text" id="studentSearch" placeholder="Search by name or phone..." 
+                                   style="padding: 0.5rem 1rem; border: 1px solid var(--gray-300); border-radius: 6px; width: 250px;"
+                                   oninput="filterStudents(this.value)">
+                        </div>
+                    </div>
+
+                    <div class="table-container" id="studentsTableContainer">
+                        ${renderStudentsTable(students)}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('contentArea').innerHTML = content;
+            
+            // Store students for search filtering
+            window.currentStudentsList = students;
+        }
+
+        function renderStudentsTable(students) {
+            if (students.length === 0) {
+                return '<p class="empty-state">No students found</p>';
+            }
+
+            return `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Contact</th>
+                            <th>Lessons</th>
+                            <th>Last Lesson</th>
+                            <th>Last Note</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${students.map(student => `
+                            <tr style="cursor: pointer;" onclick="showStudentDetail(${student.id})">
+                                <td>
+                                    <div style="font-weight: 600;">${student.name}</div>
+                                    <div style="font-size: 0.875rem; color: var(--gray-600);">
+                                        ${student.completedLessons} completed, ${student.upcomingLessons} upcoming
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>${student.phone}</div>
+                                    <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem;">
+                                        <a href="tel:${student.phone}" class="btn-sm btn-success" onclick="event.stopPropagation()" style="text-decoration: none; padding: 0.25rem 0.5rem;">📞 Call</a>
+                                        <a href="sms:${student.phone}" class="btn-sm btn-primary" onclick="event.stopPropagation()" style="text-decoration: none; padding: 0.25rem 0.5rem;">💬 SMS</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>${student.totalLessons}</strong> total
+                                </td>
+                                <td>${student.lastLessonDate || 'N/A'}</td>
+                                <td>
+                                    <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--gray-600); font-size: 0.875rem;">
+                                        ${student.lastNote || 'No notes yet'}
+                                    </div>
+                                </td>
+                                <td><span class="status-badge status-confirmed">${student.status}</span></td>
+                                <td>
+                                    <button class="btn-primary btn-sm" onclick="event.stopPropagation(); showStudentDetail(${student.id})">View Details</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function filterStudents(query) {
+            const students = window.currentStudentsList || [];
+            const lowerQuery = query.toLowerCase();
+            const filtered = students.filter(s => 
+                s.name.toLowerCase().includes(lowerQuery) || 
+                s.phone.includes(query)
+            );
+            document.getElementById('studentsTableContainer').innerHTML = renderStudentsTable(filtered);
+        }
+
+        function showStudentDetail(studentId) {
+            const student = DEMO_STUDENTS.find(s => s.id === studentId);
+            if (!student) return;
+
+            // Get all lessons for this student
+            const studentLessons = DEMO_BOOKINGS.filter(b => b.studentId === studentId);
+            studentLessons.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            const body = `
+                <div style="display: grid; gap: 1.5rem;">
+                    <!-- Student Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: start; padding-bottom: 1rem; border-bottom: 2px solid var(--gray-200);">
+                        <div>
+                            <h3 style="margin: 0 0 0.5rem 0;">${student.name}</h3>
+                            <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                                <a href="tel:${student.phone}" class="btn-success btn-sm" style="text-decoration: none;">📞 Call</a>
+                                <a href="sms:${student.phone}" class="btn-primary btn-sm" style="text-decoration: none;">💬 SMS</a>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.875rem; color: var(--gray-600);">${student.phone}</div>
+                            <span class="status-badge status-confirmed" style="margin-top: 0.5rem; display: inline-block;">${student.status}</span>
+                        </div>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div style="padding: 1rem; background: var(--gray-50); border-radius: 8px;">
+                            <div style="font-size: 0.875rem; color: var(--gray-600);">Total Lessons</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">${student.totalLessons}</div>
+                        </div>
+                        <div style="padding: 1rem; background: var(--gray-50); border-radius: 8px;">
+                            <div style="font-size: 0.875rem; color: var(--gray-600);">Completed</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">${student.completedLessons}</div>
+                        </div>
+                        <div style="padding: 1rem; background: var(--gray-50); border-radius: 8px;">
+                            <div style="font-size: 0.875rem; color: var(--gray-600);">Upcoming</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning);">${student.upcomingLessons}</div>
+                        </div>
+                    </div>
+
+                    <!-- Lesson History -->
+                    <div>
+                        <h4 style="margin: 0 0 1rem 0;">Lesson History</h4>
+                        <div style="display: grid; gap: 0.75rem;">
+                            ${studentLessons.map(lesson => `
+                                <div style="padding: 1rem; border: 1px solid var(--gray-200); border-radius: 8px; background: white;">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                        <div>
+                                            <strong>${lesson.date}</strong> at ${lesson.time}
+                                            <div style="font-size: 0.875rem; color: var(--gray-600); margin-top: 0.25rem;">
+                                                ${lesson.lessonType} - $${lesson.price}
+                                            </div>
+                                        </div>
+                                        <span class="status-badge status-${lesson.status}">${lesson.status}</span>
+                                    </div>
+                                    ${lesson.notes ? `
+                                        <div style="margin-top: 0.75rem; padding: 0.75rem; background: var(--gray-50); border-radius: 6px; border-left: 3px solid var(--primary);">
+                                            <div style="font-size: 0.75rem; font-weight: 600; color: var(--gray-600); margin-bottom: 0.25rem;">NOTES:</div>
+                                            <div style="font-size: 0.875rem; color: var(--gray-700);">${lesson.notes}</div>
+                                        </div>
+                                    ` : '<div style="font-size: 0.875rem; color: var(--gray-500); font-style: italic;">No notes for this lesson</div>'}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalTitle').textContent = 'Student Details';
+            document.getElementById('modalBody').innerHTML = body;
+            document.getElementById('modalFooter').innerHTML = '<button class="btn-primary" onclick="closeModal()">Close</button>';
+            document.getElementById('modalOverlay').classList.add('show');
+        }
+
+        async function renderInstructorAvailability() {
+            const days = [
+                { name: 'Monday', enabled: true, start: '09:00', end: '17:00' },
+                { name: 'Tuesday', enabled: false, start: '09:00', end: '17:00' },
+                { name: 'Wednesday', enabled: true, start: '09:00', end: '17:00' },
+                { name: 'Thursday', enabled: true, start: '09:00', end: '17:00' },
+                { name: 'Friday', enabled: true, start: '09:00', end: '17:00' },
+                { name: 'Saturday', enabled: true, start: '09:00', end: '17:00' },
+                { name: 'Sunday', enabled: true, start: '09:00', end: '17:00' }
+            ];
+
+            const content = `
+                <div class="card">
+                    <div class="card-header" style="border-bottom: 1px solid var(--gray-200); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                        <h3 class="card-title" style="margin: 0;">⏰ Working Hours</h3>
+                        <p style="color: var(--gray-600); margin: 0.5rem 0 0 0; font-size: 0.875rem;">Set your available working hours for each day of the week.</p>
+                    </div>
+                    
+                    <div style="display: grid; gap: 0.75rem; margin-bottom: 2rem;">
+                        ${days.map((day, index) => `
+                            <div style="display: grid; grid-template-columns: auto 1fr auto auto auto; align-items: center; gap: 1rem; padding: 1rem 1.25rem; background: ${day.enabled ? 'white' : 'var(--gray-50)'}; border: 2px solid ${day.enabled ? 'var(--primary)' : 'var(--gray-200)'}; border-radius: 10px; transition: all 0.2s;">
+                                <input type="checkbox" 
+                                       id="day-${index}" 
+                                       ${day.enabled ? 'checked' : ''} 
+                                       style="width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary);"
+                                       onchange="toggleDay(${index}, this.checked)">
+                                <label for="day-${index}" style="font-weight: 600; font-size: 1rem; color: ${day.enabled ? 'var(--gray-900)' : 'var(--gray-400)'}; cursor: pointer; user-select: none;">
+                                    ${day.name}
+                                </label>
+                                <input type="time" 
+                                       value="${day.start}" 
+                                       ${!day.enabled ? 'disabled' : ''}
+                                       style="padding: 0.5rem 0.75rem; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.875rem; width: 110px; ${!day.enabled ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+                                <span style="color: var(--gray-500); font-weight: 500;">to</span>
+                                <input type="time" 
+                                       value="${day.end}" 
+                                       ${!day.enabled ? 'disabled' : ''}
+                                       style="padding: 0.5rem 0.75rem; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.875rem; width: 110px; ${!day.enabled ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div style="display: flex; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
+                        <button class="btn-primary" onclick="saveAvailability()">
+                            💾 Save Availability
+                        </button>
+                        <button class="btn-secondary" onclick="resetAvailability()">
+                            🔄 Reset to Default
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" style="border-bottom: 1px solid var(--gray-200); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                        <h3 class="card-title" style="margin: 0;">🚫 Blocked Times</h3>
+                        <p style="color: var(--gray-600); margin: 0.5rem 0 0 0; font-size: 0.875rem;">Add specific dates or time periods when you're unavailable.</p>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <div class="empty-state" style="padding: 2rem;">
+                            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📅</div>
+                            <div style="font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;">No blocked times</div>
+                            <div style="font-size: 0.875rem; color: var(--gray-600);">Add time blocks for vacations, holidays, or personal time off</div>
+                        </div>
+                    </div>
+
+                    <button class="btn-success" onclick="addBlockedTime()">
+                        ➕ Add Blocked Time
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('contentArea').innerHTML = content;
+        }
+
+        function toggleDay(index, enabled) {
+            const row = event.target.closest('div[style*="grid-template-columns"]');
+            if (enabled) {
+                row.style.background = 'white';
+                row.style.borderColor = 'var(--primary)';
+                row.querySelectorAll('input[type="time"]').forEach(input => {
+                    input.disabled = false;
+                    input.style.opacity = '1';
+                    input.style.cursor = 'pointer';
+                });
+                row.querySelector('label').style.color = 'var(--gray-900)';
+            } else {
+                row.style.background = 'var(--gray-50)';
+                row.style.borderColor = 'var(--gray-200)';
+                row.querySelectorAll('input[type="time"]').forEach(input => {
+                    input.disabled = true;
+                    input.style.opacity = '0.5';
+                    input.style.cursor = 'not-allowed';
+                });
+                row.querySelector('label').style.color = 'var(--gray-400)';
+            }
+        }
+
+        function saveAvailability() {
+            showToast('Availability saved successfully!', 'success');
+        }
+
+        function resetAvailability() {
+            showModal(
+                'Reset Availability',
+                '<p>Are you sure you want to reset all working hours to default (Monday-Sunday, 9:00 AM - 5:00 PM)?</p>',
+                'Reset',
+                () => {
+                    showToast('Availability reset to default', 'info');
+                    renderInstructorAvailability();
+                },
+                'btn-warning'
+            );
+        }
+
+        function addBlockedTime() {
+            const body = `
+                <div style="display: grid; gap: 1rem;">
+                    <div class="form-group">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Block Type</label>
+                        <select id="blockType" style="width: 100%; padding: 0.75rem; border: 1px solid var(--gray-300); border-radius: 6px;">
+                            <option value="single">Single Day</option>
+                            <option value="range">Date Range</option>
+                            <option value="recurring">Recurring (Weekly)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Start Date</label>
+                        <input type="date" id="blockStartDate" style="width: 100%; padding: 0.75rem; border: 1px solid var(--gray-300); border-radius: 6px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">End Date</label>
+                        <input type="date" id="blockEndDate" style="width: 100%; padding: 0.75rem; border: 1px solid var(--gray-300); border-radius: 6px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Reason (Optional)</label>
+                        <input type="text" id="blockReason" placeholder="e.g., Vacation, Holiday, Personal" style="width: 100%; padding: 0.75rem; border: 1px solid var(--gray-300); border-radius: 6px;">
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalTitle').textContent = 'Add Blocked Time';
+            document.getElementById('modalBody').innerHTML = body;
+            document.getElementById('modalFooter').innerHTML = `
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveBlockedTime()">Add Block</button>
+            `;
+            document.getElementById('modalOverlay').classList.add('show');
+        }
+
+        function saveBlockedTime() {
+            showToast('Blocked time added successfully!', 'success');
+            closeModal();
+        }
+
+        // ========================================
+        // ADMIN PAGES
+        // ========================================
+        async function renderAdminDashboard() {
+            // Use /api/admin/dashboard endpoint from api_v2.php
+            let dashboardData = {};
+            let bookings = [];
+            
+            try {
+                const response = await apiCall('/api/admin/dashboard');
+                dashboardData = response.dashboard || {};
+                // Get recent bookings for table (fallback to demo in demo mode)
+                bookings = DEMO_MODE ? await getAllBookings() : [];
+            } catch (error) {
+                console.error('Failed to load dashboard:', error);
+                // Fallback to demo data
+                bookings = await getAllBookings();
+            }
+
+            const todayLessons = dashboardData.today_lessons || bookings.filter(b => b.date === new Date().toISOString().split('T')[0]).length;
+            const pendingDeposits = dashboardData.pending_deposits || bookings.filter(b => b.depositStatus === 'pending').length;
+            const monthlyBookings = dashboardData.monthly_bookings || bookings.length;
+
+            const content = `
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Today's Lessons</div>
+                        <div class="stat-value">${todayLessons}</div>
+                        <div class="stat-subtitle">Scheduled today</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-label">Pending Deposits</div>
+                        <div class="stat-value">${pendingDeposits}</div>
+                        <div class="stat-subtitle">Awaiting approval</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-label">Monthly Bookings</div>
+                        <div class="stat-value">${monthlyBookings}</div>
+                        <div class="stat-subtitle">This month</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Business</div>
+                        <div class="stat-value" style="font-size: 1.2rem;">${dashboardData.business_name || EFFECTIVE_BUSINESS_SLUG}</div>
+                        <div class="stat-subtitle">Active</div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <div class="quick-action-card" onclick="navigateTo('deposits')">
+                        <div class="quick-action-icon">💰</div>
+                        <div class="quick-action-title">Review Deposits</div>
+                        <div class="quick-action-desc">${pendingDeposits} pending approval</div>
+                    </div>
+                    <div class="quick-action-card" onclick="navigateTo('bookings')">
+                        <div class="quick-action-icon">📅</div>
+                        <div class="quick-action-title">View Bookings</div>
+                        <div class="quick-action-desc">Manage all bookings</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Bookings</h3>
+                        <button class="btn-primary btn-sm" onclick="navigateTo('bookings')">View All</button>
+                    </div>
+                    ${bookings.length > 0 ? renderBookingsTable(bookings.slice(0, 5), 'admin') : '<p style="text-align: center; padding: 20px; color: #666;">No recent bookings</p>'}
+                </div>
+            `;
+
+            document.getElementById('contentArea').innerHTML = content;
+        }
+
+        async function renderAdminBookings() {
+            const bookings = await getAllBookings();
+            
+            // Store bookings for cancelBooking function
+            window.currentBookingsList = bookings;
+
+            const content = `
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Status</label>
+                        <select>
+                            <option>All</option>
+                            <option>Confirmed</option>
+                            <option>Pending</option>
+                            <option>Canceled</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Instructor</label>
+                        <select>
+                            <option>All</option>
+                            <option>John Smith</option>
+                            <option>Sarah Johnson</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Date Range</label>
+                        <input type="date">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">All Bookings</h3>
+                    ${renderBookingsTable(bookings, 'admin')}
+                </div>
+            `;
+
+            document.getElementById('contentArea').innerHTML = content;
+        }
+
+        async function renderAdminDeposits() {
+            // Use /api/admin/pending-deposits endpoint from api_v2.php
+            let pendingDeposits = [];
+            
+            try {
+                const response = await apiCall('/api/admin/pending-deposits');
+                pendingDeposits = response.pending_deposits || [];
+            } catch (error) {
+                console.error('Failed to load pending deposits:', error);
+                // Fallback to demo data
+                if (DEMO_MODE) {
+                    const bookings = await getAllBookings();
+                    pendingDeposits = bookings.filter(b => b.depositStatus === 'pending');
+                }
+            }
+
+            // Transform API response to match expected format
+            const transformedPending = pendingDeposits.map(deposit => ({
+                id: deposit.lesson_id || deposit.id,
+                depositId: deposit.id,
+                studentName: deposit.student_name,
+                studentPhone: deposit.student_phone,
+                lessonType: deposit.lesson_type,
+                date: deposit.scheduled_at ? deposit.scheduled_at.split(' ')[0] : '',
+                time: deposit.scheduled_at ? deposit.scheduled_at.split(' ')[1] : '',
+                price: deposit.amount,
+                depositStatus: 'pending',
+                payidReference: deposit.payid_reference,
+                createdAt: deposit.created_at
+            }));
+
+            const content = `
+                <div class="card">
+                    <h3 class="card-title">Pending Deposit Approvals</h3>
+                    ${transformedPending.length === 0 ? '<p class="empty-state">No pending deposits</p>' : renderDepositsTable(transformedPending, true)}
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Recently Processed</h3>
+                    <p class="empty-state">View all bookings to see processed deposits</p>
+                </div>
+            `;
+
+            document.getElementById('contentArea').innerHTML = content;
+        }
+
+        async function renderAdminInstructors() {
+            const content = `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Instructors</h3>
+                        <button class="btn-success btn-sm" onclick="showToast('Add instructor feature - Coming soon!', 'info')">+ Add Instructor</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Active Bookings</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>John Smith</td>
+                                    <td>+61400333444</td>
+                                    <td>4</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn-warning btn-sm" onclick="showToast('Edit feature - Coming soon!', 'info')">Edit</button>
+                                            <button class="btn-danger btn-sm" onclick="showToast('Deactivate feature - Coming soon!', 'info')">Deactivate</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Sarah Johnson</td>
+                                    <td>+61400777888</td>
+                                    <td>0</td>
+                                    <td><span class="status-badge status-confirmed">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn-warning btn-sm" onclick="showToast('Edit feature - Coming soon!', 'info')">Edit</button>
+                                            <button class="btn-danger btn-sm" onclick="showToast('Deactivate feature - Coming soon!', 'info')">Deactivate</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('contentArea').innerHTML = content;
+        }
+
+        function renderProfile() {
+            const user = state.currentUser;
+            const content = `
+                <div class="card">
+                    <h3 class="card-title">Profile Information</h3>
+                    <div style="display: grid; gap: 1.5rem; max-width: 600px;">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" value="${user.name}" class="form-control" style="padding: 0.75rem; border: 1px solid var(--gray-300); border-radius: 6px; width: 100%;">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" value="${user.phone}" class="form-control" style="padding: 0.75rem; border: 1px solid var(--gray-300); border-radius: 6px; width: 100%;" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Role</label>
+                            <input type="text" value="${user.role.charAt(0).toUpperCase() + user.role.slice(1)}" class="form-control" style="padding: 0.75rem; border: 1px solid var(--gray-300); border-radius: 6px; width: 100%;" readonly>
+                        </div>
+                        <div>
+                            <button class="btn-primary" onclick="showToast('Profile update feature - Coming soon!', 'info')">Update Profile</button>
+                            <button class="btn-secondary" style="margin-left: 0.5rem;" onclick="showToast('Change password feature - Coming soon!', 'info')">Change Password</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('contentArea').innerHTML = content;
+        }
+
+        async function renderAdminLessonTypes() {
+            const content = `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Lesson Types</h3>
+                        <button class="btn-success btn-sm" onclick="showToast('Add lesson type feature - Coming soon!', 'info')">+ Add Lesson Type</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Duration</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Basic Driving</td>
+                                    <td>60 minutes</td>
+                                    <td><strong>$80</strong></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn-warning btn-sm" onclick="showToast('Edit feature - Coming soon!', 'info')">Edit</button>
+                                            <button class="btn-danger btn-sm" onclick="showToast('Delete feature - Coming soon!', 'info')">Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Highway Driving</td>
+                                    <td>90 minutes</td>
+                                    <td><strong>$120</strong></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn-warning btn-sm" onclick="showToast('Edit feature - Coming soon!', 'info')">Edit</button>
+                                            <button class="btn-danger btn-sm" onclick="showToast('Delete feature - Coming soon!', 'info')">Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Parking Practice</td>
+                                    <td>45 minutes</td>
+                                    <td><strong>$60</strong></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn-warning btn-sm" onclick="showToast('Edit feature - Coming soon!', 'info')">Edit</button>
+                                            <button class="btn-danger btn-sm" onclick="showToast('Delete feature - Coming soon!', 'info')">Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('contentArea').innerHTML = content;
+        }
+
+        // ========================================
+        // SHARED PAGES
+        // ========================================
+        function renderProfile() {
+            const content = `
+                <div class="card">
+                    <h3 class="card-title">Profile Information</h3>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" value="${state.currentUser.name}">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" value="${state.currentUser.phone}">
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <input type="text" value="${state.currentUser.role}" disabled>
+                    </div>
+                    <button class="btn-primary">Save Changes</button>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Change Password</h3>
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <input type="password">
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password">
+                    </div>
+                    <button class="btn-primary">Update Password</button>
+                </div>
+            `;
+
+            document.getElementById('contentArea').innerHTML = content;
+        }
+
+        // ========================================
+        // RENDER HELPERS
+        // ========================================
+        function renderBookingsTable(bookings, role) {
+            if (bookings.length === 0) {
+                return '<p class="empty-state">No bookings found</p>';
+            }
+
+            const headers = role === 'admin' 
+                ? '<th>ID</th><th>Date & Time</th><th>Student</th><th>Instructor</th><th>Type</th><th>Status</th><th>Actions</th>'
+                : role === 'instructor'
+                ? '<th>Date & Time</th><th>Student</th><th>Type</th><th>Status</th><th>Actions</th>'
+                : '<th>Date & Time</th><th>Instructor</th><th>Type</th><th>Status</th><th>Actions</th>';
+
+            const rows = bookings.map(b => {
+                const actions = role === 'admin'
+                    ? `<button class="btn-warning btn-sm" onclick="viewDetails(${b.id})">Details</button>
+                       ${b.status === 'pending' ? '<button class="btn-success btn-sm" onclick="approveBooking(' + b.id + ')">Approve</button>' : ''}
+                       ${b.status !== 'canceled' ? '<button class="btn-danger btn-sm" onclick="cancelBooking(' + b.id + ')">Cancel</button>' : ''}`
+                    : role === 'instructor'
+                    ? `${b.status === 'confirmed' ? '<button class="btn-success btn-sm" onclick="startLesson(' + b.id + ')">Start</button>' : ''}
+                       <button class="btn-warning btn-sm" onclick="viewDetails(${b.id})">Details</button>
+                       ${b.status !== 'canceled' ? '<button class="btn-danger btn-sm" onclick="cancelBooking(' + b.id + ')">Cancel</button>' : ''}`
+                    : `${b.status === 'confirmed' ? '<button class="btn-warning btn-sm" onclick="showToast(&quot;Reschedule feature - Coming soon!&quot;, &quot;info&quot;)">Reschedule</button>' : ''}
+                       ${b.status !== 'canceled' ? '<button class="btn-danger btn-sm" onclick="cancelBooking(' + b.id + ')">Cancel</button>' : ''}`;
+
+                const cols = role === 'admin'
+                    ? `<td>#${b.id}</td>
+                       <td>${b.date}<br><small style="color: var(--gray-600);">${b.time}</small></td>
+                       <td>${b.studentName}<br><small style="color: var(--gray-600);">${b.studentPhone}</small></td>
+                       <td>${b.instructorName}</td>
+                       <td>${b.lessonType}</td>
+                       <td><span class="status-badge status-${b.status}">${b.status}</span></td>
+                       <td><div class="action-buttons">${actions}</div></td>`
+                    : role === 'instructor'
+                    ? `<td>${b.date}<br><small style="color: var(--gray-600);">${b.time}</small></td>
+                       <td>${b.studentName}<br><small style="color: var(--gray-600);">${b.studentPhone}</small></td>
+                       <td>${b.lessonType}</td>
+                       <td><span class="status-badge status-${b.status}">${b.status}</span></td>
+                       <td><div class="action-buttons">${actions}</div></td>`
+                    : `<td>${b.date}<br><small style="color: var(--gray-600);">${b.time}</small></td>
+                       <td>${b.instructorName}</td>
+                       <td>${b.lessonType}</td>
+                       <td><span class="status-badge status-${b.status}">${b.status}</span></td>
+                       <td><div class="action-buttons">${actions}</div></td>`;
+
+                return `<tr>${cols}</tr>`;
+            }).join('');
+
+            return `
+                <div class="table-container">
+                    <table>
+                        <thead><tr>${headers}</tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderDepositsTable(bookings, showApproval = false) {
+            if (bookings.length === 0) {
+                return '<p class="empty-state">No deposits found</p>';
+            }
+
+            const rows = bookings.map(b => {
+                // Use depositId if available, otherwise fall back to id
+                const depositId = b.depositId || b.id;
+                return `
+                <tr>
+                    <td>#${b.id}</td>
+                    <td>${b.studentName}<br><small style="color: var(--gray-600);">${b.studentPhone || ''}</small></td>
+                    <td>${b.lessonType || 'Lesson'}<br><small style="color: var(--gray-600);">${b.date} ${b.time}</small></td>
+                    <td><strong>$${b.price}</strong>${b.payidReference ? '<br><small style="color: var(--gray-600);">Ref: ' + b.payidReference + '</small>' : ''}</td>
+                    <td><span class="status-badge status-${b.depositStatus === 'paid' ? 'confirmed' : 'pending'}">${b.depositStatus}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            ${showApproval && b.depositStatus === 'pending' ? 
+                                '<button class="btn-success btn-sm" onclick="approveDeposit(' + depositId + ')">Approve</button><button class="btn-danger btn-sm" onclick="rejectDeposit(' + depositId + ')">Reject</button>' 
+                                : b.depositStatus === 'pending' ? '<button class="btn-primary btn-sm" onclick="showToast(\'Submit deposit feature - Coming soon!\', \'info\')">Submit Reference</button>' : '-'}
+                        </div>
+                    </td>
+                </tr>
+            `;
+            }).join('');
+
+            return `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Student</th>
+                                <th>Lesson</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // ========================================
+        // ACTION HANDLERS
+        // ========================================
+        // Modal Functions
+        function showModal(title, body, confirmText, confirmCallback, confirmClass = 'btn-primary') {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = body;
+            
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+            confirmBtn.textContent = confirmText;
+            confirmBtn.className = confirmClass;
+            
+            // Remove old event listeners by cloning
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+            
+            newConfirmBtn.addEventListener('click', () => {
+                confirmCallback();
+                closeModal();
+            });
+            
+            document.getElementById('modalOverlay').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('show');
+        }
+
+        function showDetailsModal(booking) {
+            const body = `
+                <div style="display: grid; gap: 1rem;">
+                    <div><strong>Booking ID:</strong> #${booking.id}</div>
+                    <div><strong>Date:</strong> ${booking.date}</div>
+                    <div><strong>Time:</strong> ${booking.time}</div>
+                    <div><strong>Student:</strong> ${booking.studentName}</div>
+                    <div><strong>Phone:</strong> ${booking.studentPhone}</div>
+                    <div><strong>Instructor:</strong> ${booking.instructorName}</div>
+                    <div><strong>Lesson Type:</strong> ${booking.lessonType}</div>
+                    <div><strong>Price:</strong> $${booking.price}</div>
+                    <div><strong>Status:</strong> <span class="status-badge status-${booking.status}">${booking.status}</span></div>
+                    <div><strong>Deposit Status:</strong> <span class="status-badge status-${booking.depositStatus === 'paid' ? 'confirmed' : 'pending'}">${booking.depositStatus}</span></div>
+                </div>
+            `;
+            
+            document.getElementById('modalTitle').textContent = 'Booking Details';
+            document.getElementById('modalBody').innerHTML = body;
+            document.getElementById('modalFooter').innerHTML = '<button class="btn-primary" onclick="closeModal()">Close</button>';
+            document.getElementById('modalOverlay').classList.add('show');
+        }
+
+        // Action Functions
+        async function cancelBooking(id) {
+            // Try to find booking in current list, or fetch it
+            let booking = null;
+            
+            // Try to get from current bookings list (if available)
+            if (window.currentBookingsList) {
+                booking = window.currentBookingsList.find(b => b.id === id);
+            }
+            
+            // If not found, try demo data (for demo mode)
+            if (!booking && DEMO_MODE) {
+                booking = DEMO_BOOKINGS.find(b => b.id === id);
+            }
+            
+            // If still not found, show error
+            if (!booking) {
+                showToast('Booking not found', 'error');
+                return;
+            }
+            
+            showModal(
+                'Cancel Booking',
+                `<p>Are you sure you want to cancel this booking?</p>
+                 <div style="margin-top: 1rem; padding: 1rem; background: var(--gray-50); border-radius: 8px;">
+                    <strong>${booking.date}</strong> at ${booking.time}<br>
+                    Student: ${booking.studentName}<br>
+                    Lesson: ${booking.lessonType}
+                 </div>
+                 <div style="margin-top: 1rem;">
+                    <label>Reason (optional):</label>
+                    <textarea id="cancelReason" placeholder="E.g., Student requested reschedule" 
+                              style="width: 100%; padding: 0.5rem; margin-top: 0.5rem; border: 1px solid var(--gray-300); border-radius: 4px;"></textarea>
+                 </div>`,
+                'Yes, Cancel',
+                async () => {
+                    try {
+                        const reason = document.getElementById('cancelReason')?.value || '';
+                        
+                        if (DEMO_MODE) {
+                            // Demo mode - update local data
+                            booking.status = 'cancelled';
+                            showToast('Booking #' + id + ' has been cancelled', 'success');
+                        } else {
+                            // Production mode - call API
+                            await apiCall('/api/booking/cancel', 'POST', {
+                                booking_id: id,
+                                reason: reason
+                            });
+                            showToast('Booking cancelled successfully', 'success');
+                        }
+                        
+                        setTimeout(() => loadPage(state.currentPage), 500);
+                    } catch (error) {
+                        showToast('Failed to cancel booking: ' + error.message, 'error');
+                    }
+                },
+                'btn-danger'
+            );
+        }
+
+        function approveBooking(id) {
+            const booking = DEMO_BOOKINGS.find(b => b.id === id);
+            if (!booking) return;
+            
+            showModal(
+                'Approve Booking',
+                `<p>Approve this booking?</p>
+                 <div style="margin-top: 1rem; padding: 1rem; background: var(--gray-50); border-radius: 8px;">
+                    <strong>${booking.date}</strong> at ${booking.time}<br>
+                    Student: ${booking.studentName}<br>
+                    Instructor: ${booking.instructorName}
+                 </div>`,
+                'Approve',
+                () => {
+                    booking.status = 'confirmed';
+                    showToast('Booking #' + id + ' approved successfully', 'success');
+                    setTimeout(() => loadPage(state.currentPage), 500);
+                },
+                'btn-success'
+            );
+        }
+
+        function startLesson(id) {
+            const booking = DEMO_BOOKINGS.find(b => b.id === id);
+            if (!booking) return;
+            
+            showModal(
+                'Start Lesson',
+                `<p>Mark this lesson as started?</p>
+                 <div style="margin-top: 1rem; padding: 1rem; background: var(--gray-50); border-radius: 8px;">
+                    <strong>${booking.date}</strong> at ${booking.time}<br>
+                    Student: ${booking.studentName}<br>
+                    Lesson: ${booking.lessonType}
+                 </div>`,
+                'Start Lesson',
+                () => {
+                    showToast('Lesson #' + id + ' started', 'success');
+                    setTimeout(() => loadPage(state.currentPage), 500);
+                },
+                'btn-success'
+            );
+        }
+
+        function viewDetails(id) {
+            const booking = DEMO_BOOKINGS.find(b => b.id === id);
+            if (booking) {
+                showDetailsModal(booking);
+            }
+        }
+
+        async function approveDeposit(depositId) {
+            // Use /api/admin/verify-deposit endpoint from api_v2.php
+            const booking = DEMO_BOOKINGS.find(b => b.depositId === depositId || b.id === depositId);
+            if (!booking && !DEMO_MODE) {
+                showToast('Booking not found', 'error');
+                return;
+            }
+            
+            showModal(
+                'Approve Deposit',
+                `<p>Approve deposit for this booking?</p>
+                 <div style="margin-top: 1rem; padding: 1rem; background: var(--gray-50); border-radius: 8px;">
+                    <strong>Deposit #${depositId}</strong><br>
+                    ${booking ? `Student: ${booking.studentName}<br>Amount: $${booking.price}` : 'Confirm approval?'}
+                 </div>`,
+                'Approve',
+                async () => {
+                    try {
+                        if (DEMO_MODE) {
+                            // Demo mode - update local data
+                            if (booking) booking.depositStatus = 'paid';
+                            showToast('Deposit #' + depositId + ' approved', 'success');
+                        } else {
+                            // Production mode - call API
+                            await apiCall('/api/admin/verify-deposit', 'POST', {
+                                deposit_id: depositId,
+                                status: 'confirmed'
+                            });
+                            showToast('Deposit approved successfully', 'success');
+                        }
+                        setTimeout(() => loadPage(state.currentPage), 500);
+                    } catch (error) {
+                        showToast('Failed to approve deposit: ' + error.message, 'error');
+                    }
+                },
+                'btn-success'
+            );
+        }
+
+        async function rejectDeposit(depositId) {
+            // Use /api/admin/verify-deposit endpoint from api_v2.php
+            const booking = DEMO_BOOKINGS.find(b => b.depositId === depositId || b.id === depositId);
+            if (!booking && !DEMO_MODE) {
+                showToast('Booking not found', 'error');
+                return;
+            }
+            
+            showModal(
+                'Reject Deposit',
+                `<p>Reject deposit for this booking?</p>
+                 <div style="margin-top: 1rem; padding: 1rem; background: var(--gray-50); border-radius: 8px;">
+                    <strong>Deposit #${depositId}</strong><br>
+                    ${booking ? `Student: ${booking.studentName}<br>Amount: $${booking.price}` : 'Confirm rejection?'}
+                 </div>`,
+                'Reject',
+                async () => {
+                    try {
+                        if (DEMO_MODE) {
+                            // Demo mode - update local data
+                            if (booking) booking.depositStatus = 'rejected';
+                            showToast('Deposit #' + depositId + ' rejected', 'error');
+                        } else {
+                            // Production mode - call API
+                            await apiCall('/api/admin/verify-deposit', 'POST', {
+                                deposit_id: depositId,
+                                status: 'failed'
+                            });
+                            showToast('Deposit rejected', 'info');
+                        }
+                        setTimeout(() => loadPage(state.currentPage), 500);
+                    } catch (error) {
+                        showToast('Failed to reject deposit: ' + error.message, 'error');
+                    }
+                },
+                'btn-danger'
+            );
+        }
+
+        // ========================================
+        // DATA FETCHING
+        // ========================================
+        async function getStudentBookings() {
+            // Use /api/my-lessons endpoint from api_v2.php
+            const phone = state.currentUser.phone;
+            const response = await apiCall(`/api/my-lessons?phone=${phone}`);
+            return response.lessons || [];
+        }
+
+        async function getInstructorBookings() {
+            // Use /api/admin/schedule endpoint from api_v2.php
+            const instructorId = state.currentUser.id;
+            const today = new Date().toISOString().split('T')[0];
+            const endDate = new Date();
+            endDate.setDate(endDate.getDate() + 30);
+            const endDateStr = endDate.toISOString().split('T')[0];
+            
+            const response = await apiCall(
+                `/api/admin/schedule?instructor_id=${instructorId}&start_date=${today}&end_date=${endDateStr}`
+            );
+            return response.lessons || [];
+        }
+
+        async function getAllBookings() {
+            // Use /api/portal/bookings endpoint
+            try {
+                const response = await apiCall('/api/portal/bookings');
+                const bookings = response.bookings || [];
+                
+                // Transform API response to match frontend format
+                return bookings.map(b => {
+                    const scheduledAt = new Date(b.scheduled_at);
+                    return {
+                        id: b.id,
+                        studentId: b.student_id,
+                        studentName: b.student_name,
+                        studentPhone: b.student_phone,
+                        instructorId: b.instructor_id,
+                        instructorName: b.instructor_name,
+                        instructorPhone: b.instructor_phone,
+                        lessonType: b.lesson_type,
+                        date: scheduledAt.toISOString().split('T')[0],
+                        time: scheduledAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+                        status: b.status,
+                        price: b.price,
+                        depositStatus: b.payment_status || (b.deposit_paid ? 'paid' : 'pending'),
+                        notes: b.notes || '',
+                        payidReference: b.payid_reference,
+                        depositId: b.deposit_id
+                    };
+                });
+            } catch (error) {
+                console.error('Failed to load bookings:', error);
+                // Fallback to demo data in demo mode
+                if (DEMO_MODE) {
+                    return DEMO_BOOKINGS;
+                }
+                throw error;
+            }
+        }
+
+        // ========================================
+        // API CALLS
+        // ========================================
+        // Helper function to build API URL with business slug
+        function getApiUrl(endpoint) {
+            // Ensure endpoint starts with /api/
+            if (!endpoint.startsWith('/api/')) {
+                endpoint = '/api' + endpoint;
+            }
+            return `${CONFIG.API_BASE_URL}/${EFFECTIVE_BUSINESS_SLUG}${endpoint}`;
+        }
+        
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            if (DEMO_MODE) {
+                console.log(`[DEMO] API Call: ${method} ${endpoint}`, data);
+                return simulateApiCall(endpoint, method, data);
+            }
+
+            try {
+                const options = {
+                    method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+
+                if (data && method !== 'GET') {
+                    options.body = JSON.stringify(data);
+                }
+
+                const url = getApiUrl(endpoint);
+                console.log('API Request:', url);
+                const response = await fetch(url, options);
+                
+                // Get response text first to check if it's empty
+                const text = await response.text();
+                console.log('API Response:', response.status, text.substring(0, 200));
+                
+                // Try to parse as JSON
+                let result;
+                try {
+                    result = text ? JSON.parse(text) : {};
+                } catch (parseError) {
+                    console.error('JSON Parse Error:', parseError);
+                    console.error('Response text:', text);
+                    throw new Error(`Invalid JSON response: ${text.substring(0, 100)}`);
+                }
+
+                if (!response.ok) {
+                    throw new Error(result.error || result.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                return result;
+            } catch (error) {
+                console.error('API Error:', error);
+                showToast(error.message || 'An error occurred', 'error');
+                throw error;
+            }
+        }
+
+        async function simulateApiCall(endpoint, method, data) {
+            console.log('[DEMO] simulateApiCall:', endpoint, method, data);
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            // Auth endpoints (keep for demo mode)
+            if (endpoint === '/auth/login' || endpoint === '/api/portal/login') {
+                console.log('Checking login credentials...');
+                const user = Object.values(DEMO_USERS).find(u => 
+                    u.phone === data.phone && u.password === data.password
+                );
+                console.log('Found user:', user);
+                if (user) return { success: true, user };
+                throw new Error('Invalid credentials');
+            }
+
+            if (endpoint === '/auth/register' || endpoint === '/api/portal/register') {
+                return {
+                    success: true,
+                    user: {
+                        id: Date.now(),
+                        name: data.name,
+                        phone: data.phone,
+                        email: data.email || '',
+                        role: data.role || 'student' // Use the role from registration form
+                    }
+                };
+            }
+
+            // Student lessons (matches /api/my-lessons)
+            if (endpoint.includes('/api/my-lessons')) {
+                return {
+                    success: true,
+                    lessons: DEMO_BOOKINGS.filter(b => b.studentId === state.currentUser.id).map(b => ({
+                        id: b.id,
+                        scheduled_at: `${b.date} ${b.time}`,
+                        status: b.status,
+                        notes: b.notes,
+                        instructor_name: b.instructorName,
+                        instructor_phone: b.instructorPhone,
+                        lesson_type: b.lessonType,
+                        duration_minutes: 60,
+                        price: b.price,
+                        payment_status: b.depositStatus
+                    }))
+                };
+            }
+
+            // Instructor schedule (matches /api/admin/schedule)
+            if (endpoint.includes('/api/admin/schedule')) {
+                return {
+                    success: true,
+                    lessons: DEMO_BOOKINGS.filter(b => b.instructorId === state.currentUser.id).map(b => ({
+                        id: b.id,
+                        scheduled_at: `${b.date} ${b.time}`,
+                        status: b.status,
+                        notes: b.notes,
+                        student_name: b.studentName,
+                        student_phone: b.studentPhone,
+                        lesson_type: b.lessonType,
+                        duration_minutes: 60,
+                        price: b.price,
+                        payment_status: b.depositStatus
+                    }))
+                };
+            }
+
+            // Admin dashboard (matches /api/admin/dashboard)
+            if (endpoint.includes('/api/admin/dashboard')) {
+                const today = new Date().toISOString().split('T')[0];
+                return {
+                    success: true,
+                    dashboard: {
+                        today_lessons: DEMO_BOOKINGS.filter(b => b.date === today).length,
+                        pending_deposits: DEMO_BOOKINGS.filter(b => b.depositStatus === 'pending').length,
+                        monthly_bookings: DEMO_BOOKINGS.length,
+                        business_name: 'Demo Driving School'
+                    }
+                };
+            }
+
+            // Pending deposits (matches /api/admin/pending-deposits)
+            if (endpoint.includes('/api/admin/pending-deposits')) {
+                return {
+                    success: true,
+                    pending_deposits: DEMO_BOOKINGS.filter(b => b.depositStatus === 'pending').map(b => ({
+                        id: b.id,
+                        lesson_id: b.id,
+                        amount: b.price,
+                        payid_reference: 'DEMO' + b.id,
+                        created_at: b.date,
+                        scheduled_at: `${b.date} ${b.time}`,
+                        student_name: b.studentName,
+                        student_phone: b.studentPhone,
+                        lesson_type: b.lessonType
+                    }))
+                };
+            }
+
+            // Verify deposit (matches /api/admin/verify-deposit)
+            if (endpoint.includes('/api/admin/verify-deposit')) {
+                return {
+                    success: true,
+                    message: `Deposit ${data.status} successfully`
+                };
+            }
+
+            // Legacy endpoints (for backward compatibility)
+            if (endpoint === '/bookings/student') {
+                return { bookings: DEMO_BOOKINGS.filter(b => b.studentId === state.currentUser.id) };
+            }
+
+            if (endpoint === '/bookings/instructor') {
+                return { bookings: DEMO_BOOKINGS.filter(b => b.instructorId === state.currentUser.id) };
+            }
+
+            if (endpoint === '/bookings/all') {
+                return { bookings: DEMO_BOOKINGS };
+            }
+
+            console.warn('[DEMO] Unknown endpoint:', endpoint);
+            throw new Error('Unknown endpoint: ' + endpoint);
+        }
+
+        // ========================================
+        // UTILITIES
+        // ========================================
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        function toggleMobileMenu() {
+            document.querySelector('.sidebar').classList.toggle('mobile-open');
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

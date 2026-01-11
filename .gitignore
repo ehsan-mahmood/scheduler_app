@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Data files (JSON storage)
+backend/data/*.json
+!backend/data/.gitkeep
+
+# Backup files
+backup.sql
+backup_*.sql
+*.bak
+*.backup
+
+# Log files
+*.log
+logs/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Database dumps
+*.sql.backup
+*.dump
+
+# Compiled files
+*.class
+*.pyc
+__pycache__/
+
+# Cache
+.cache/
+*.cache
+

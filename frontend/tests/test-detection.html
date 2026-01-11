@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Detection Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+        .result {
+            background: #334155;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .success { background: #065f46; }
+        .warning { background: #92400e; }
+        .demo { background: #1e3a8a; }
+        h1 { color: #60a5fa; }
+        h2 { color: #a78bfa; }
+        pre {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .label {
+            font-weight: bold;
+            color: #fbbf24;
+        }
+        code {
+            color: #34d399;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚗 Business Detection Test</h1>
+    
+    <div class="result" id="mainResult">
+        <h2>Current URL Analysis</h2>
+        <div id="output"></div>
+    </div>
+
+    <div class="result">
+        <h2>Test URLs</h2>
+        <p>Try these URLs to test detection:</p>
+        <ul id="testUrls"></ul>
+    </div>
+
+    <script>
+        // Same detection function as driving_school_app.html
+        function detectBusinessSlug() {
+            const pathParts = window.location.pathname.split('/').filter(p => p);
+            
+            if (pathParts.length > 0) {
+                const firstSegment = pathParts[0];
+                
+                if (firstSegment.includes('.')) {
+                    // File in root
+                } else {
+                    if (/^[a-z0-9-]+$/.test(firstSegment)) {
+                        return firstSegment;
+                    }
+                }
+            }
+            
+            // Check subdomain
+            const hostname = window.location.hostname;
+            const parts = hostname.split('.');
+            if (parts.length >= 3 && parts[0] !== 'www' && parts[0] !== 'localhost') {
+                return parts[0];
+            }
+            
+            return null;
+        }
+
+        // Run detection
+        const detectedBusiness = detectBusinessSlug();
+        const demoMode = detectedBusiness === null;
+        
+        // Get all URL info
+        const urlInfo = {
+            'Full URL': window.location.href,
+            'Hostname': window.location.hostname,
+            'Pathname': window.location.pathname,
+            'Port': window.location.port,
+            'Protocol': window.location.protocol
+        };
+        
+        const pathParts = window.location.pathname.split('/').filter(p => p);
+        const hostParts = window.location.hostname.split('.');
+        
+        const detection = {
+            'Path Parts': JSON.stringify(pathParts),
+            'First Segment': pathParts[0] || '(none)',
+            'Has Extension?': pathParts[0] ? (pathParts[0].includes('.') ? 'Yes' : 'No') : 'N/A',
+            'Host Parts': JSON.stringify(hostParts),
+            'Subdomain?': hostParts.length >= 3 ? hostParts[0] : '(none)',
+            '': '',
+            'Detected Business': detectedBusiness || '(null)',
+            'Mode': demoMode ? '🎮 DEMO MODE' : '✅ PRODUCTION MODE',
+            'Effective Business': detectedBusiness || 'acme-driving (fallback)'
+        };
+
+        // Display results
+        let output = '<div style="margin-bottom: 20px;">';
+        output += '<h3>URL Information</h3><pre>';
+        for (const [key, value] of Object.entries(urlInfo)) {
+            output += `<span class="label">${key}:</span> <code>${value}</code>\n`;
+        }
+        output += '</pre></div>';
+
+        output += '<div><h3>Detection Analysis</h3><pre>';
+        for (const [key, value] of Object.entries(detection)) {
+            if (key === '') {
+                output += '\n';
+            } else {
+                output += `<span class="label">${key}:</span> <code>${value}</code>\n`;
+            }
+        }
+        output += '</pre></div>';
+
+        document.getElementById('output').innerHTML = output;
+
+        // Set result box color
+        const resultBox = document.getElementById('mainResult');
+        if (demoMode) {
+            resultBox.className = 'result demo';
+        } else {
+            resultBox.className = 'result success';
+        }
+
+        // Generate test URLs
+        const baseUrl = `${window.location.protocol}//${window.location.host}`;
+        const testUrls = [
+            { url: `${baseUrl}/acme-driving/`, expected: 'acme-driving' },
+            { url: `${baseUrl}/acme-driving/driving_school_app.html`, expected: 'acme-driving' },
+            { url: `${baseUrl}/city-school/index.html`, expected: 'city-school' },
+            { url: `${baseUrl}/test-detection.html`, expected: 'null (demo mode)' },
+            { url: `${baseUrl}/`, expected: 'null (demo mode)' }
+        ];
+
+        const urlList = document.getElementById('testUrls');
+        testUrls.forEach(test => {
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="${test.url}" style="color: #60a5fa;">${test.url}</a> → Expected: <code>${test.expected}</code>`;
+            urlList.appendChild(li);
+        });
+
+        // Log to console as well
+        console.log('🧪 Detection Test Results:', {
+            currentUrl: window.location.href,
+            pathname: window.location.pathname,
+            pathParts: pathParts,
+            detectedBusiness: detectedBusiness,
+            demoMode: demoMode
+        });
+    </script>
+</body>
+</html>
+

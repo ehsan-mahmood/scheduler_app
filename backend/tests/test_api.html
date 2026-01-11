@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend API Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .endpoint {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+        }
+        .endpoint h3 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            font-family: monospace;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 5px 5px 0;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .response {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            border-left-color: #4CAF50;
+        }
+        .error {
+            border-left-color: #f44336;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚗 Driving School Backend API Tester</h1>
+    <p>Make sure the backend server is running at <strong>http://localhost:8001</strong></p>
+    
+    <div class="section">
+        <h2>1. Register Student</h2>
+        <div class="endpoint">
+            <label>Phone Number:</label>
+            <input type="text" id="register-phone" placeholder="0412345678" value="0412345678">
+            <button onclick="registerStudent()">Register</button>
+            <div id="register-response" class="response" style="display:none;"></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>2. Verify OTP</h2>
+        <div class="endpoint">
+            <label>Phone Number:</label>
+            <input type="text" id="verify-phone" placeholder="0412345678" value="0412345678">
+            <label>OTP Code:</label>
+            <input type="text" id="verify-otp" placeholder="123456">
+            <button onclick="verifyOTP()">Verify OTP</button>
+            <div id="verify-response" class="response" style="display:none;"></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>3. Book Lesson</h2>
+        <div class="endpoint">
+            <label>Phone:</label>
+            <input type="text" id="book-phone" placeholder="0412345678" value="0412345678">
+            <label>Lesson Type:</label>
+            <input type="text" id="book-lesson-type" placeholder="1" value="1">
+            <label>Instructor:</label>
+            <input type="text" id="book-instructor" placeholder="1" value="1">
+            <label>Date:</label>
+            <input type="date" id="book-date" value="">
+            <label>Time:</label>
+            <input type="time" id="book-time" value="10:00">
+            <button onclick="bookLesson()">Book Lesson</button>
+            <div id="book-response" class="response" style="display:none;"></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>4. Submit Deposit</h2>
+        <div class="endpoint">
+            <label>Lesson ID:</label>
+            <input type="text" id="deposit-lesson-id" placeholder="Paste lesson_id from booking">
+            <label>PayID Reference:</label>
+            <input type="text" id="deposit-reference" placeholder="REF123456" value="REF123456">
+            <button onclick="submitDeposit()">Submit Deposit</button>
+            <div id="deposit-response" class="response" style="display:none;"></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>5. Dashboard</h2>
+        <div class="endpoint">
+            <button onclick="getDashboard()">Get Dashboard</button>
+            <div id="dashboard-response" class="response" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8001';
+        
+        function setDefaultDate() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dateStr = tomorrow.toISOString().split('T')[0];
+            document.getElementById('book-date').value = dateStr;
+        }
+        setDefaultDate();
+
+        async function makeRequest(endpoint, method, data) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                const response = await fetch(`${API_BASE}${endpoint}`, options);
+                const result = await response.json();
+                return { success: response.ok, data: result, status: response.status };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        function showResponse(elementId, result) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = 'response ' + (result.success ? 'success' : 'error');
+            if (result.error) {
+                element.textContent = `Error: ${result.error}`;
+            } else {
+                element.textContent = `Status: ${result.status}\n\n${JSON.stringify(result.data, null, 2)}`;
+            }
+        }
+
+        async function registerStudent() {
+            const phone = document.getElementById('register-phone').value;
+            const result = await makeRequest('/register', 'POST', { phone });
+            showResponse('register-response', result);
+            if (result.success && result.data.otp) {
+                document.getElementById('verify-otp').value = result.data.otp;
+                alert(`OTP: ${result.data.otp} (auto-filled)`);
+            }
+        }
+
+        async function verifyOTP() {
+            const phone = document.getElementById('verify-phone').value;
+            const otp = document.getElementById('verify-otp').value;
+            const result = await makeRequest('/verify-otp', 'POST', { phone, otp });
+            showResponse('verify-response', result);
+        }
+
+        async function bookLesson() {
+            const data = {
+                phone: document.getElementById('book-phone').value,
+                lesson_type: document.getElementById('book-lesson-type').value,
+                instructor: document.getElementById('book-instructor').value,
+                date: document.getElementById('book-date').value,
+                time: document.getElementById('book-time').value
+            };
+            const result = await makeRequest('/book-lesson', 'POST', data);
+            showResponse('book-response', result);
+            if (result.success && result.data.lesson_id) {
+                document.getElementById('deposit-lesson-id').value = result.data.lesson_id;
+                alert(`Lesson ID: ${result.data.lesson_id} (auto-filled)`);
+            }
+        }
+
+        async function submitDeposit() {
+            const lesson_id = document.getElementById('deposit-lesson-id').value;
+            const payid_reference = document.getElementById('deposit-reference').value;
+            const result = await makeRequest('/submit-deposit', 'POST', { lesson_id, payid_reference });
+            showResponse('deposit-response', result);
+        }
+
+        async function getDashboard() {
+            const result = await makeRequest('/dashboard', 'GET');
+            showResponse('dashboard-response', result);
+        }
+    </script>
+</body>
+</html>
+
