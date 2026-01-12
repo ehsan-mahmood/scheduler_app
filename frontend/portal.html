@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DriveScheduler Portal</title>
+    <title>Scheduler Portal</title>
     <style>
         * {
             margin: 0;
@@ -12,45 +12,73 @@
         }
 
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
+            --primary: #2d3748;
+            --primary-light: #4a5568;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-dark: #1a202c;
+            --text-medium: #4a5568;
+            --text-light: #718096;
+            --text-near-black: #1a202c;
+            --text-gray: #718096;
+            
+            /* Status colors */
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-400: #94a3b8;
-            --gray-500: #64748b;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --gray-800: #1e293b;
-            --gray-900: #0f172a;
+            
+            /* Gray scale */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            
             --sidebar-width: 260px;
         }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-900);
-            min-height: 100vh;
+        /* Elegant glass morphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
         }
 
-        /* Demo Banner */
+        .glass-strong {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: linear-gradient(180deg, #f2ff6ab2 0%, #edf2f7 100%);
+            background-attachment: fixed;
+            color: var(--text-dark);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Small Demo Badge */
         .demo-banner {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            text-align: center;
-            padding: 0.75rem;
-            font-weight: 600;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1001;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            top: 16px;
+            right: 16px;
+            background: var(--text-gray);
+            color: white;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 4px;
+            z-index: 1000;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
             display: none;
         }
 
@@ -64,17 +92,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
         }
 
         .auth-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: 20px;
             padding: 3rem;
             max-width: 480px;
             width: 100%;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         }
 
         .auth-header {
@@ -85,14 +115,11 @@
         .auth-header h1 {
             font-size: 2rem;
             margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--text-near-black);
         }
 
         .auth-header p {
-            color: var(--gray-600);
+            color: var(--text-gray);
         }
 
         /* Portal Layout */
@@ -108,8 +135,10 @@
         /* Sidebar */
         .sidebar {
             width: var(--sidebar-width);
-            background: white;
-            border-right: 1px solid var(--gray-200);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(0, 0, 0, 0.06);
             display: flex;
             flex-direction: column;
             position: fixed;
@@ -132,10 +161,7 @@
         .sidebar-logo {
             font-size: 1.25rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--text-near-black);
         }
 
         .sidebar-user {
@@ -150,7 +176,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: var(--accent);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -189,24 +215,26 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 0.75rem 1.5rem;
-            color: var(--gray-700);
+            padding: 1rem 1.5rem;
+            color: var(--text-medium);
             text-decoration: none;
             transition: all 0.2s ease;
             cursor: pointer;
             border-left: 3px solid transparent;
+            margin: 0.25rem 0;
         }
 
         .nav-item:hover {
-            background: var(--gray-50);
-            color: var(--primary);
+            background: rgba(0, 0, 0, 0.03);
+            color: var(--accent);
         }
 
         .nav-item.active {
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--primary);
-            border-left-color: var(--primary);
-            font-weight: 600;
+            background: rgba(59, 130, 246, 0.12);
+            color: var(--accent);
+            border-left-color: var(--accent);
+            font-weight: 700;
+            border-left-width: 4px;
         }
 
         .nav-icon {
@@ -225,12 +253,14 @@
             flex: 1;
             margin-left: var(--sidebar-width);
             min-height: 100vh;
-            background: var(--gray-50);
+            /* background: var(--gray-50); */
         }
 
         .top-bar {
-            background: white;
-            border-bottom: 1px solid var(--gray-200);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
@@ -257,11 +287,30 @@
 
         /* Cards */
         .card {
-            background: white;
-            border-radius: 12px;
+            border-radius: 20px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .card.glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        .card.glass-strong {
+            background: rgba(255, 255, 255, 1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
         }
 
         .card-header {
@@ -286,12 +335,18 @@
         }
 
         .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
             position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
         .stat-card::before {
@@ -301,19 +356,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-        }
-
-        .stat-card.warning::before {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        }
-
-        .stat-card.success::before {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        }
-
-        .stat-card.danger::before {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            background: var(--accent);
         }
 
         .stat-label {
@@ -352,18 +395,28 @@
 
         input, select, textarea {
             width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--gray-200);
-            border-radius: 8px;
+            padding: 0.875rem 1rem;
+            border: 1.5px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
             font-size: 1rem;
             transition: all 0.2s ease;
-            background: white;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: var(--text-dark);
+            font-family: inherit;
+        }
+
+        input:hover, select:hover, textarea:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(0, 0, 0, 0.12);
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         /* Buttons */
@@ -392,8 +445,15 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: var(--accent);
             color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
         }
 
         .btn-secondary {
@@ -417,9 +477,24 @@
         }
 
         .btn-outline {
-            background: white;
-            border: 2px solid var(--gray-300);
-            color: var(--gray-700);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1.5px solid rgba(0, 0, 0, 0.08);
+            color: var(--text-dark);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 1);
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-outline:active {
+            transform: translateY(0);
         }
 
         .btn-sm {
@@ -430,17 +505,25 @@
         .link-button {
             background: none;
             border: none;
-            color: var(--primary);
-            text-decoration: underline;
+            color: var(--accent);
+            text-decoration: none;
             cursor: pointer;
-            padding: 0;
+            padding: 0.5rem 0.75rem;
             font-size: 0.95rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
         }
 
         .link-button:hover {
-            color: var(--primary-dark);
-            transform: none;
-            box-shadow: none;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+        
+        .link-button:active {
+            background: rgba(59, 130, 246, 0.15);
+            transform: translateY(0);
         }
 
         /* Tables */
@@ -475,11 +558,22 @@
         }
 
         tbody tr {
-            transition: background 0.2s ease;
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
 
         tbody tr:hover {
-            background: var(--gray-50);
+            background: rgba(59, 130, 246, 0.06);
+            transform: scale(1.01);
+        }
+        
+        tbody tr.selected {
+            background: rgba(59, 130, 246, 0.12);
+            border-left: 4px solid var(--accent);
+        }
+        
+        tbody tr.selected:hover {
+            background: rgba(59, 130, 246, 0.15);
         }
 
         td button {
@@ -554,9 +648,12 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: white;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             padding: 1rem 1.5rem;
-            border-radius: 8px;
+            border-radius: 12px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
             z-index: 2000;
             display: none;
@@ -603,8 +700,11 @@
         }
 
         .modal-dialog {
-            background: white;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             max-width: 500px;
             width: 90%;
@@ -867,27 +967,30 @@
         /* Quick Actions */
         .quick-actions {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
             flex-wrap: wrap;
         }
 
         .quick-action-card {
             flex: 1;
             min-width: 200px;
-            background: white;
-            border: 2px solid var(--gray-200);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: 12px;
-            padding: 1.5rem;
+            padding: 2rem;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
         .quick-action-card:hover {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.05);
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 1);
             transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
         }
 
         .quick-action-icon {
@@ -908,16 +1011,16 @@
     </style>
 </head>
 <body>
-    <!-- Mode Banner (visible on all screens) -->
-    <div id="demoBanner" style="display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 10000; color: white; padding: 12px 20px; text-align: center; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <span id="demoBannerText">🎓 Portal - Demo Mode</span>
+    <!-- Demo Mode Badge -->
+    <div id="demoBanner" class="demo-banner">
+        <!-- Will be populated by JavaScript -->
     </div>
 
     <!-- Login Screen -->
     <div id="loginScreen" class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <h1>🚗 DriveScheduler</h1>
+                <h1>Scheduler</h1>
                 <p>Portal Login</p>
             </div>
 
@@ -929,11 +1032,11 @@
                 </div>
                 <div style="display: grid; gap: 0.75rem;">
                     <button type="button" class="btn-outline" style="width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center;" onclick="quickLogin('student')">
-                        <span><strong>👨‍🎓 Student</strong> - Alice Johnson</span>
+                        <span><strong>👨‍🎓 Customer</strong> - Alice Johnson</span>
                         <span style="font-size: 0.85rem; color: var(--gray-600);">→</span>
                     </button>
                     <button type="button" class="btn-outline" style="width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center;" onclick="quickLogin('instructor')">
-                        <span><strong>👨‍🏫 Instructor</strong> - John Smith</span>
+                        <span><strong>👨‍🏫 Provider</strong> - John Smith</span>
                         <span style="font-size: 0.85rem; color: var(--gray-600);">→</span>
                     </button>
                     <button type="button" class="btn-outline" style="width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center;" onclick="quickLogin('admin')">
@@ -981,8 +1084,8 @@
                     <div style="display: flex; align-items: center; gap: 1rem;">
                         <span style="font-size: 2rem;">👨‍🎓</span>
                         <div style="flex: 1;">
-                            <div style="font-weight: 700; font-size: 1.1rem; color: var(--gray-900);">Student Account</div>
-                            <div style="font-size: 0.875rem; color: var(--gray-600);">Book and manage your driving lessons</div>
+                            <div style="font-weight: 700; font-size: 1.1rem; color: var(--gray-900);">Customer Account</div>
+                            <div style="font-size: 0.875rem; color: var(--gray-600);">Book and manage your appointments</div>
                         </div>
                         <span style="font-size: 1.5rem; color: var(--gray-400);">→</span>
                     </div>
@@ -992,8 +1095,8 @@
                     <div style="display: flex; align-items: center; gap: 1rem;">
                         <span style="font-size: 2rem;">👨‍🏫</span>
                         <div style="flex: 1;">
-                            <div style="font-weight: 700; font-size: 1.1rem; color: var(--gray-900);">Instructor Account</div>
-                            <div style="font-size: 0.875rem; color: var(--gray-600);">Manage your schedule and students</div>
+                            <div style="font-weight: 700; font-size: 1.1rem; color: var(--gray-900);">Provider Account</div>
+                            <div style="font-size: 0.875rem; color: var(--gray-600);">Manage your schedule and customers</div>
                         </div>
                         <span style="font-size: 1.5rem; color: var(--gray-400);">→</span>
                     </div>
@@ -1003,7 +1106,7 @@
             <div class="text-center" style="color: var(--gray-600); padding-top: 1.5rem; border-top: 1px solid var(--gray-200);">
                 <p>Already have an account? <button class="link-button" onclick="showLogin()">Login</button></p>
                 <p style="margin-top: 0.5rem; font-size: 0.875rem;">
-                    Students can also register through <a href="driving_school_app.html" style="color: var(--primary);">public booking page</a>
+                    Customers can also register through <a href="driving_school_app.html" style="color: var(--primary);">public booking page</a>
                 </p>
             </div>
         </div>
@@ -1034,7 +1137,7 @@
                     <label for="registerEmail">Email <span style="color: var(--gray-500); font-weight: normal;">(Optional)</span></label>
                     <input type="email" id="registerEmail" placeholder="john@example.com">
                     <small style="display: block; margin-top: 0.5rem; color: var(--gray-600); font-size: 0.875rem;">
-                        Recommended for instructors
+                        Recommended for providers
                     </small>
                 </div>
 
@@ -1066,7 +1169,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-logo">🚗 DriveScheduler</div>
+                <div class="sidebar-logo">Scheduler</div>
             </div>
 
             <div class="sidebar-user">
@@ -1096,10 +1199,6 @@
                 <div></div>
             </div>
 
-            <!-- Demo Mode Banner -->
-            <div id="demoBanner" style="display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 20px; text-align: center; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                <span id="demoBannerText">🎓 Portal - Demo Mode</span>
-            </div>
 
             <div class="content-area" id="contentArea">
                 <!-- Content populated by JavaScript -->
@@ -1261,7 +1360,7 @@
                 studentPhone: '+61400111222',
                 instructorId: 2,
                 instructorName: 'John Smith',
-                lessonType: 'Basic Driving',
+                lessonType: 'Basic Service',
                 date: '2026-01-15',
                 time: '10:00 AM',
                 status: 'confirmed',
@@ -1276,7 +1375,7 @@
                 studentPhone: '+61400111222',
                 instructorId: 2,
                 instructorName: 'John Smith',
-                lessonType: 'Highway Driving',
+                lessonType: 'Premium Service',
                 date: '2026-01-18',
                 time: '2:00 PM',
                 status: 'pending',
@@ -1291,7 +1390,7 @@
                 studentPhone: '+61400555777',
                 instructorId: 2,
                 instructorName: 'John Smith',
-                lessonType: 'Parking Practice',
+                lessonType: 'Standard Service',
                 date: '2026-01-20',
                 time: '11:00 AM',
                 status: 'confirmed',
@@ -1306,7 +1405,7 @@
                 studentPhone: '+61400888999',
                 instructorId: 2,
                 instructorName: 'John Smith',
-                lessonType: 'Test Preparation',
+                lessonType: 'Extended Service',
                 date: '2026-01-22',
                 time: '3:00 PM',
                 status: 'confirmed',
@@ -1321,7 +1420,7 @@
                 studentPhone: '+61400555777',
                 instructorId: 2,
                 instructorName: 'John Smith',
-                lessonType: 'Basic Driving',
+                lessonType: 'Basic Service',
                 date: '2025-12-10',
                 time: '9:00 AM',
                 status: 'confirmed',
@@ -1336,7 +1435,7 @@
                 studentPhone: '+61400555777',
                 instructorId: 2,
                 instructorName: 'John Smith',
-                lessonType: 'City Driving',
+                lessonType: 'Standard Service',
                 date: '2025-12-17',
                 time: '10:00 AM',
                 status: 'confirmed',
@@ -1351,7 +1450,7 @@
                 studentPhone: '+61400888999',
                 instructorId: 2,
                 instructorName: 'John Smith',
-                lessonType: 'Highway Driving',
+                lessonType: 'Premium Service',
                 date: '2025-11-20',
                 time: '2:00 PM',
                 status: 'confirmed',
@@ -1366,7 +1465,7 @@
                 studentPhone: '+61400222333',
                 instructorId: 2,
                 instructorName: 'John Smith',
-                lessonType: 'Basic Driving',
+                lessonType: 'Basic Service',
                 date: '2026-01-16',
                 time: '1:00 PM',
                 status: 'confirmed',
@@ -1440,14 +1539,14 @@
         const NAV_CONFIG = {
             student: [
                 { id: 'dashboard', icon: '📊', label: 'Dashboard' },
-                { id: 'lessons', icon: '📚', label: 'My Lessons' },
+                { id: 'lessons', icon: '📚', label: 'My Appointments' },
                 { id: 'payments', icon: '💳', label: 'Payments' },
                 { id: 'profile', icon: '👤', label: 'Profile' }
             ],
             instructor: [
                 { id: 'dashboard', icon: '📊', label: 'Dashboard' },
                 { id: 'schedule', icon: '📅', label: 'Schedule' },
-                { id: 'students', icon: '👥', label: 'Students' },
+                { id: 'students', icon: '👥', label: 'Customers' },
                 { id: 'availability', icon: '⏰', label: 'Availability' },
                 { id: 'profile', icon: '👤', label: 'Profile' }
             ],
@@ -1455,8 +1554,8 @@
                 { id: 'dashboard', icon: '📊', label: 'Dashboard' },
                 { id: 'bookings', icon: '📚', label: 'All Bookings' },
                 { id: 'deposits', icon: '💰', label: 'Deposits' },
-                { id: 'instructors', icon: '👨‍🏫', label: 'Instructors' },
-                { id: 'lesson-types', icon: '📝', label: 'Lesson Types' }
+                { id: 'instructors', icon: '👨‍🏫', label: 'Providers' },
+                { id: 'lesson-types', icon: '📝', label: 'Services' }
             ]
         };
 
@@ -1473,16 +1572,13 @@
             
             // Update demo banner
             const demoBanner = document.getElementById('demoBanner');
-            const demoBannerText = document.getElementById('demoBannerText');
             
             if (DEMO_MODE) {
-                demoBanner.style.display = 'block';
-                demoBannerText.textContent = `🎓 Portal - Demo Mode | Business: ${EFFECTIVE_BUSINESS_SLUG}`;
+                demoBanner.textContent = 'Demo Mode';
+                demoBanner.classList.add('show');
                 document.getElementById('demoQuickLogin')?.classList.remove('hidden');
             } else {
-                demoBanner.style.display = 'block';
-                demoBanner.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
-                demoBannerText.textContent = `🎓 Portal - Production Mode | Business: ${EFFECTIVE_BUSINESS_SLUG}`;
+                demoBanner.classList.remove('show');
             }
 
             setupEventListeners();
@@ -1673,13 +1769,13 @@
             const emailGroup = document.getElementById('emailGroup');
             
             if (role === 'student') {
-                title.textContent = 'Create Student Account';
-                subtitle.textContent = 'Register to book and manage your driving lessons';
-                emailGroup.style.display = 'none'; // Hide email for students
+                title.textContent = 'Create Customer Account';
+                subtitle.textContent = 'Register to book and manage your appointments';
+                emailGroup.style.display = 'none'; // Hide email for customers
             } else {
-                title.textContent = 'Create Instructor Account';
-                subtitle.textContent = 'Register to manage your schedule and students';
-                emailGroup.style.display = 'block'; // Show email for instructors
+                title.textContent = 'Create Provider Account';
+                subtitle.textContent = 'Register to manage your schedule and customers';
+                emailGroup.style.display = 'block'; // Show email for providers
             }
         }
 
@@ -1769,7 +1865,7 @@
             const content = `
                 <div class="dashboard-grid">
                     <div class="stat-card">
-                        <div class="stat-label">Next Lesson</div>
+                        <div class="stat-label">Next Appointment</div>
                         <div class="stat-value">${nextLesson ? nextLesson.date : 'None'}</div>
                         <div class="stat-subtitle">${nextLesson ? nextLesson.time + ' - ' + nextLesson.lessonType : 'No upcoming lessons'}</div>
                     </div>
@@ -1779,7 +1875,7 @@
                         <div class="stat-subtitle">Awaiting payment</div>
                     </div>
                     <div class="stat-card success">
-                        <div class="stat-label">Total Lessons</div>
+                        <div class="stat-label">Total Appointments</div>
                         <div class="stat-value">${bookings.length}</div>
                         <div class="stat-subtitle">All time</div>
                     </div>
@@ -1788,19 +1884,19 @@
                 <div class="quick-actions">
                     <div class="quick-action-card" onclick="window.location.href='driving_school_app.html'">
                         <div class="quick-action-icon">📅</div>
-                        <div class="quick-action-title">Book a Lesson</div>
-                        <div class="quick-action-desc">Schedule your next driving lesson</div>
+                        <div class="quick-action-title">Book Appointment</div>
+                        <div class="quick-action-desc">Schedule your next appointment</div>
                     </div>
                     <div class="quick-action-card" onclick="navigateTo('payments')">
                         <div class="quick-action-icon">💳</div>
                         <div class="quick-action-title">Submit Deposit</div>
-                        <div class="quick-action-desc">Pay for pending lessons</div>
+                        <div class="quick-action-desc">Pay for pending appointments</div>
                     </div>
                 </div>
 
-                <div class="card">
+                <div class="card glass">
                     <div class="card-header">
-                        <h3 class="card-title">Upcoming Lessons</h3>
+                        <h3 class="card-title">Upcoming Appointments</h3>
                         <button class="btn-primary btn-sm" onclick="navigateTo('lessons')">View All</button>
                     </div>
                     ${renderBookingsTable(upcoming.slice(0, 3), 'student')}
@@ -1814,10 +1910,10 @@
             const bookings = await getStudentBookings();
 
             const content = `
-                <div class="card">
+                <div class="card glass">
                     <div class="card-header">
-                        <h3 class="card-title">All My Lessons</h3>
-                        <a href="driving_school_app.html" class="btn-success btn-sm">+ Book New Lesson</a>
+                        <h3 class="card-title">All My Appointments</h3>
+                        <a href="driving_school_app.html" class="btn-success btn-sm">+ Book New Appointment</a>
                     </div>
                     ${renderBookingsTable(bookings, 'student')}
                 </div>
@@ -1831,12 +1927,12 @@
             const pending = bookings.filter(b => b.depositStatus === 'pending');
 
             const content = `
-                <div class="card">
+                <div class="card glass">
                     <h3 class="card-title">Pending Deposits</h3>
                     ${pending.length === 0 ? '<p class="empty-state">No pending deposits</p>' : renderDepositsTable(pending)}
                 </div>
 
-                <div class="card">
+                <div class="card glass">
                     <h3 class="card-title">Payment History</h3>
                     ${renderDepositsTable(bookings.filter(b => b.depositStatus === 'paid'))}
                 </div>
@@ -1862,14 +1958,14 @@
             const content = `
                 <div class="dashboard-grid">
                     <div class="stat-card">
-                        <div class="stat-label">Today's Lessons</div>
+                        <div class="stat-label">Today's Appointments</div>
                         <div class="stat-value">${todayLessons.length}</div>
                         <div class="stat-subtitle">${todayLessons.length} scheduled</div>
                     </div>
                     <div class="stat-card warning">
                         <div class="stat-label">This Week</div>
                         <div class="stat-value">${thisWeek}</div>
-                        <div class="stat-subtitle">Total lessons</div>
+                        <div class="stat-subtitle">Total appointments</div>
                     </div>
                     <div class="stat-card success">
                         <div class="stat-label">Upcoming</div>
@@ -1877,9 +1973,9 @@
                         <div class="stat-subtitle">Confirmed lessons</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Total Students</div>
+                        <div class="stat-label">Total Customers</div>
                         <div class="stat-value">${totalStudents}</div>
-                        <div class="stat-subtitle">Active students</div>
+                        <div class="stat-subtitle">Active customers</div>
                     </div>
                 </div>
 
@@ -1892,15 +1988,15 @@
                     </div>
                     <div class="quick-action-card" onclick="navigateTo('students')">
                         <div class="quick-action-icon">👥</div>
-                        <div class="quick-action-title">My Students</div>
-                        <div class="quick-action-desc">${totalStudents} students</div>
+                        <div class="quick-action-title">My Customers</div>
+                        <div class="quick-action-desc">${totalStudents} customers</div>
                     </div>
                 </div>
 
                 <!-- Today's Lessons Execution View -->
-                <div class="card">
+                <div class = "card glass">
                     <div class="card-header">
-                        <h3 class="card-title">📍 Today's Lessons</h3>
+                        <h3 class="card-title">Today's Appointments</h3>
                         <button class="btn-primary btn-sm" onclick="navigateTo('schedule')">View Full Schedule</button>
                     </div>
                     ${todayLessons.length > 0 ? renderTodayLessonsTable(todayLessons) : `
@@ -1914,7 +2010,7 @@
 
                 <!-- Upcoming This Week -->
                 ${bookings.length > 0 ? `
-                    <div class="card">
+                    <div class = "card glass">
                         <div class="card-header">
                             <h3 class="card-title">Upcoming This Week</h3>
                         </div>
@@ -2036,7 +2132,7 @@
             }
 
             const content = `
-                <div class="card">
+                <div class = "card glass">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <h3 class="card-title">My Schedule</h3>
                         <div style="display: flex; gap: 0.5rem;">
@@ -2184,9 +2280,9 @@
             }
             
             const content = `
-                <div class="card">
+                <div class = "card glass">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                        <h3 class="card-title" style="margin: 0;">My Students</h3>
+                        <h3 class="card-title" style="margin: 0;">My Customers</h3>
                         <div style="display: flex; gap: 0.75rem; align-items: center;">
                             <input type="text" id="studentSearch" placeholder="Search by name or phone..." 
                                    style="padding: 0.5rem 1rem; border: 1px solid var(--gray-300); border-radius: 6px; width: 250px;"
@@ -2331,7 +2427,7 @@
                                             <div style="font-size: 0.75rem; font-weight: 600; color: var(--gray-600); margin-bottom: 0.25rem;">NOTES:</div>
                                             <div style="font-size: 0.875rem; color: var(--gray-700);">${lesson.notes}</div>
                                         </div>
-                                    ` : '<div style="font-size: 0.875rem; color: var(--gray-500); font-style: italic;">No notes for this lesson</div>'}
+                                    ` : '<div style="font-size: 0.875rem; color: var(--gray-500); font-style: italic;">No notes for this appointment</div>'}
                                 </div>
                             `).join('')}
                         </div>
@@ -2357,7 +2453,7 @@
             ];
 
             const content = `
-                <div class="card">
+                <div class = "card glass">
                     <div class="card-header" style="border-bottom: 1px solid var(--gray-200); padding-bottom: 1rem; margin-bottom: 1.5rem;">
                         <h3 class="card-title" style="margin: 0;">⏰ Working Hours</h3>
                         <p style="color: var(--gray-600); margin: 0.5rem 0 0 0; font-size: 0.875rem;">Set your available working hours for each day of the week.</p>
@@ -2397,7 +2493,7 @@
                     </div>
                 </div>
 
-                <div class="card">
+                <div class = "card glass">
                     <div class="card-header" style="border-bottom: 1px solid var(--gray-200); padding-bottom: 1rem; margin-bottom: 1.5rem;">
                         <h3 class="card-title" style="margin: 0;">🚫 Blocked Times</h3>
                         <p style="color: var(--gray-600); margin: 0.5rem 0 0 0; font-size: 0.875rem;">Add specific dates or time periods when you're unavailable.</p>
@@ -2526,7 +2622,7 @@
             const content = `
                 <div class="dashboard-grid">
                     <div class="stat-card">
-                        <div class="stat-label">Today's Lessons</div>
+                        <div class="stat-label">Today's Appointments</div>
                         <div class="stat-value">${todayLessons}</div>
                         <div class="stat-subtitle">Scheduled today</div>
                     </div>
@@ -2560,7 +2656,7 @@
                     </div>
                 </div>
 
-                <div class="card">
+                <div class = "card glass">
                     <div class="card-header">
                         <h3 class="card-title">Recent Bookings</h3>
                         <button class="btn-primary btn-sm" onclick="navigateTo('bookings')">View All</button>
@@ -2603,7 +2699,7 @@
                     </div>
                 </div>
 
-                <div class="card">
+                <div class = "card glass">
                     <h3 class="card-title">All Bookings</h3>
                     ${renderBookingsTable(bookings, 'admin')}
                 </div>
@@ -2644,12 +2740,12 @@
             }));
 
             const content = `
-                <div class="card">
+                <div class = "card glass">
                     <h3 class="card-title">Pending Deposit Approvals</h3>
                     ${transformedPending.length === 0 ? '<p class="empty-state">No pending deposits</p>' : renderDepositsTable(transformedPending, true)}
                 </div>
 
-                <div class="card">
+                <div class = "card glass">
                     <h3 class="card-title">Recently Processed</h3>
                     <p class="empty-state">View all bookings to see processed deposits</p>
                 </div>
@@ -2660,10 +2756,10 @@
 
         async function renderAdminInstructors() {
             const content = `
-                <div class="card">
+                <div class = "card glass">
                     <div class="card-header">
-                        <h3 class="card-title">Instructors</h3>
-                        <button class="btn-success btn-sm" onclick="showToast('Add instructor feature - Coming soon!', 'info')">+ Add Instructor</button>
+                        <h3 class="card-title">Providers</h3>
+                        <button class="btn-success btn-sm" onclick="showToast('Add provider feature - Coming soon!', 'info')">+ Add Provider</button>
                     </div>
                     <div class="table-container">
                         <table>
@@ -2713,7 +2809,7 @@
         function renderProfile() {
             const user = state.currentUser;
             const content = `
-                <div class="card">
+                <div class = "card glass">
                     <h3 class="card-title">Profile Information</h3>
                     <div style="display: grid; gap: 1.5rem; max-width: 600px;">
                         <div class="form-group">
@@ -2740,10 +2836,10 @@
 
         async function renderAdminLessonTypes() {
             const content = `
-                <div class="card">
+                <div class = "card glass">
                     <div class="card-header">
-                        <h3 class="card-title">Lesson Types</h3>
-                        <button class="btn-success btn-sm" onclick="showToast('Add lesson type feature - Coming soon!', 'info')">+ Add Lesson Type</button>
+                        <h3 class="card-title">Services</h3>
+                        <button class="btn-success btn-sm" onclick="showToast('Add service feature - Coming soon!', 'info')">+ Add Service</button>
                     </div>
                     <div class="table-container">
                         <table>
@@ -2757,7 +2853,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>Basic Driving</td>
+                                    <td>Basic Service</td>
                                     <td>60 minutes</td>
                                     <td><strong>$80</strong></td>
                                     <td>
@@ -2768,7 +2864,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Highway Driving</td>
+                                    <td>Premium Service</td>
                                     <td>90 minutes</td>
                                     <td><strong>$120</strong></td>
                                     <td>
@@ -2779,7 +2875,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Parking Practice</td>
+                                    <td>Standard Service</td>
                                     <td>45 minutes</td>
                                     <td><strong>$60</strong></td>
                                     <td>
@@ -2803,7 +2899,7 @@
         // ========================================
         function renderProfile() {
             const content = `
-                <div class="card">
+                <div class = "card glass">
                     <h3 class="card-title">Profile Information</h3>
                     <div class="form-group">
                         <label>Full Name</label>
@@ -2820,7 +2916,7 @@
                     <button class="btn-primary">Save Changes</button>
                 </div>
 
-                <div class="card">
+                <div class = "card glass">
                     <h3 class="card-title">Change Password</h3>
                     <div class="form-group">
                         <label>Current Password</label>
@@ -3191,7 +3287,28 @@
             // Use /api/my-lessons endpoint from api_v2.php
             const phone = state.currentUser.phone;
             const response = await apiCall(`/api/my-lessons?phone=${phone}`);
-            return response.lessons || [];
+            const lessons = response.lessons || [];
+            
+            // Transform API response to match frontend format
+            return lessons.map(l => {
+                const scheduledAt = new Date(l.scheduled_at);
+                return {
+                    id: l.id,
+                    studentId: state.currentUser.id,
+                    studentName: state.currentUser.name,
+                    studentPhone: state.currentUser.phone,
+                    instructorId: null, // Not in API response
+                    instructorName: l.instructor_name || 'Unknown',
+                    instructorPhone: l.instructor_phone || '',
+                    lessonType: l.lesson_type,
+                    date: scheduledAt.toISOString().split('T')[0],
+                    time: scheduledAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+                    status: l.status,
+                    price: l.price || 0,
+                    depositStatus: l.payment_status || 'pending',
+                    notes: l.notes || ''
+                };
+            });
         }
 
         async function getInstructorBookings() {
@@ -3205,7 +3322,28 @@
             const response = await apiCall(
                 `/api/admin/schedule?instructor_id=${instructorId}&start_date=${today}&end_date=${endDateStr}`
             );
-            return response.lessons || [];
+            const lessons = response.lessons || [];
+            
+            // Transform API response to match frontend format
+            return lessons.map(l => {
+                const scheduledAt = new Date(l.scheduled_at);
+                return {
+                    id: l.id,
+                    studentId: null, // Not in API response
+                    studentName: l.student_name || 'Unknown',
+                    studentPhone: l.student_phone || '',
+                    instructorId: state.currentUser.id,
+                    instructorName: state.currentUser.name,
+                    instructorPhone: state.currentUser.phone || '',
+                    lessonType: l.lesson_type,
+                    date: scheduledAt.toISOString().split('T')[0],
+                    time: scheduledAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+                    status: l.status,
+                    price: l.price || 0,
+                    depositStatus: l.payment_status || 'pending',
+                    notes: l.notes || ''
+                };
+            });
         }
 
         async function getAllBookings() {
@@ -3379,7 +3517,7 @@
                         today_lessons: DEMO_BOOKINGS.filter(b => b.date === today).length,
                         pending_deposits: DEMO_BOOKINGS.filter(b => b.depositStatus === 'pending').length,
                         monthly_bookings: DEMO_BOOKINGS.length,
-                        business_name: 'Demo Driving School'
+                        business_name: 'Demo Business'
                     }
                 };
             }
