@@ -8,6 +8,10 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
 
+// Load notification system
+require_once __DIR__ . '/notifications/NotificationHelper.php';
+require_once __DIR__ . '/notifications/NotificationTimelineHelper.php';
+
 // CORS Headers
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -717,6 +721,9 @@ if ($route === 'api/book-lesson' && $method === 'POST') {
         'deposit_paid' => false
     ]);
     
+    // Emit booking created event (non-blocking)
+    emitBookingCreatedEvent($lessonId, $BUSINESS_ID);
+    
     sendResponse([
         'success' => true,
         'message' => 'Lesson booked successfully',
@@ -896,6 +903,12 @@ if ($route === 'api/admin/verify-deposit' && $method === 'POST') {
             WHERE id = ? AND business_id = ?
         ");
         $stmt->execute([$result['lesson_id'], $BUSINESS_ID]);
+        
+        // Emit deposit confirmed event (non-blocking)
+        emitDepositConfirmedEvent($result['lesson_id'], $BUSINESS_ID);
+    } else if ($status === 'failed') {
+        // Emit deposit failed event (non-blocking)
+        emitDepositFailedEvent($result['lesson_id'], $BUSINESS_ID);
     }
     
     sendResponse([
@@ -1355,6 +1368,29 @@ if ($route === 'api/booking/cancel' && $method === 'POST') {
     sendResponse([
         'success' => true,
         'message' => 'Booking cancelled successfully' . $cancellationNote
+    ]);
+}
+
+// ============================================
+// NOTIFICATION TIMELINE ENDPOINT
+// ============================================
+
+/**
+ * GET /{business}/api/booking/{bookingId}/notifications
+ * Get notification timeline for a booking
+ */
+if (preg_match('#^api/booking/([^/]+)/notifications$#', $route, $matches) && $method === 'GET') {
+    $bookingId = $matches[1];
+    
+    if (empty($bookingId)) {
+        sendError('Booking ID is required');
+    }
+    
+    $timeline = getNotificationTimeline($bookingId, $BUSINESS_ID);
+    
+    sendResponse([
+        'success' => true,
+        'timeline' => $timeline
     ]);
 }
 

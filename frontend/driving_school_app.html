@@ -802,6 +802,69 @@
             transform: rotate(90deg);
         }
 
+        .notification-options {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .notification-option {
+            flex: 1;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .notification-option .option-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            transition: all 0.2s ease;
+            text-align: center;
+            min-height: 80px;
+        }
+
+        .notification-option:hover .option-label {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-option input[type="radio"]:checked + .option-label {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .notification-option .option-icon {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .notification-option .option-label span:not(.option-icon) {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-gray);
+        }
+
+        .notification-option input[type="radio"]:checked + .option-label span:not(.option-icon) {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
         .otp-input {
             text-align: center;
             font-size: 1.75rem;
@@ -818,6 +881,119 @@
             color: var(--gray-700);
             font-size: 0.95rem;
             border-left: 4px solid var(--primary);
+        }
+
+        /* Notification Timeline */
+        .notification-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: 8px;
+            border-left: 4px solid;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .timeline-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-item.sms {
+            border-left-color: #10b981;
+        }
+
+        .timeline-item.email {
+            border-left-color: #3b82f6;
+        }
+
+        .timeline-icon {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .timeline-item.sms .timeline-icon {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .timeline-item.email .timeline-icon {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+
+        .timeline-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .timeline-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-channel {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--gray-900);
+        }
+
+        .timeline-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            background: #d1fae5;
+            color: #065f46;
+            font-weight: 500;
+        }
+
+        .timeline-recipient {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-contact {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            font-family: monospace;
+        }
+
+        .timeline-message {
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-200);
+        }
+
+        .timeline-subject {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--gray-900);
+        }
+
+        .timeline-timestamp {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            margin-top: 0.5rem;
         }
 
         /* Toast notifications */
@@ -863,6 +1039,151 @@
                 transform: translateX(0);
                 opacity: 1;
             }
+        }
+
+        /* Phone-style Notification Popups */
+        .notification-popup {
+            position: fixed;
+            right: 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            z-index: 3000;
+            min-width: 320px;
+            max-width: 400px;
+            overflow: hidden;
+            border-left: 4px solid;
+        }
+
+        .notification-popup.sms {
+            border-left-color: #10b981;
+        }
+
+        .notification-popup.email {
+            border-left-color: #3b82f6;
+        }
+
+        @keyframes notificationSlideIn {
+            from {
+                transform: translateX(450px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes notificationSlideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(450px);
+                opacity: 0;
+            }
+        }
+
+        .notification-popup.hiding {
+            animation: notificationSlideOut 0.3s ease forwards;
+        }
+
+        .notification-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .notification-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .notification-popup.sms .notification-icon {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .notification-popup.email .notification-icon {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .notification-header-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-app-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--gray-900);
+            margin-bottom: 0.15rem;
+        }
+
+        .notification-type {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .notification-time {
+            font-size: 0.7rem;
+            color: var(--gray-500);
+            white-space: nowrap;
+        }
+
+        .notification-body {
+            padding: 1rem 1.25rem;
+        }
+
+        .notification-sender {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-subject {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            line-height: 1.5;
+            margin-top: 0.5rem;
+        }
+
+        .notification-footer {
+            padding: 0.75rem 1.25rem;
+            background: var(--gray-50);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            font-size: 0.7rem;
+            color: var(--gray-500);
+            text-align: center;
+        }
+
+        #notificationContainer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2999;
         }
 
         /* Legend */
@@ -1174,8 +1495,38 @@
                     To confirm your booking, please enter your phone number. We'll send you a verification code.
                 </div>
                 <div class="form-group">
+                    <label>Notification Preference</label>
+                    <div class="notification-options">
+                        <label class="notification-option">
+                            <input type="radio" name="notificationPreference" value="sms" checked onchange="updateContactInput()">
+                            <span class="option-label">
+                                <span class="option-icon">📱</span>
+                                <span>SMS only</span>
+                            </span>
+                        </label>
+                        <label class="notification-option">
+                            <input type="radio" name="notificationPreference" value="email" onchange="updateContactInput()">
+                            <span class="option-label">
+                                <span class="option-icon">📧</span>
+                                <span>Email only</span>
+                            </span>
+                        </label>
+                        <label class="notification-option">
+                            <input type="radio" name="notificationPreference" value="both" onchange="updateContactInput()">
+                            <span class="option-label">
+                                <span class="option-icon">📱📧</span>
+                                <span>Both</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group" id="phoneInputGroup">
                     <label for="phoneInput">Phone Number</label>
                     <input type="tel" id="phoneInput" placeholder="+61 400 000 000">
+                </div>
+                <div class="form-group hidden" id="emailInputGroup">
+                    <label for="emailInput">Email Address</label>
+                    <input type="email" id="emailInput" placeholder="your.email@example.com">
                 </div>
                 <button class="btn-primary" onclick="sendOtp()">Send Code</button>
             </div>
@@ -1183,10 +1534,10 @@
             <!-- OTP Verification Step -->
             <div id="otpStep" class="hidden">
                 <div class="modal-info">
-                    We've sent a 6-digit code to <strong id="phoneDisplay"></strong>
+                    We've sent a 6-digit verification code to <strong id="phoneDisplay"></strong>
                 </div>
                 <div class="form-group">
-                    <label for="otpInput">Enter Code</label>
+                    <label for="otpInput">Enter Verification Code</label>
                     <input type="text" id="otpInput" class="otp-input" maxlength="6" placeholder="000000">
                 </div>
                 <button class="btn-primary" onclick="verifyOtp()">Verify & Book</button>
@@ -1199,6 +1550,26 @@
 
     <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
+
+    <!-- Notification Container for Popups -->
+    <div id="notificationContainer"></div>
+
+    <!-- Notification Timeline Modal -->
+    <div id="notificationTimelineModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Notification Timeline</h2>
+                <button class="close-btn" onclick="closeNotificationTimeline()">&times;</button>
+            </div>
+            <div class="modal-info" style="margin-bottom: 1.5rem;">
+                <strong>📱 Simulated Notifications</strong><br>
+                These notifications are simulated for demo purposes. In production, they would be sent via SMS and Email.
+            </div>
+            <div id="notificationTimelineContent" style="max-height: 500px; overflow-y: auto;">
+                <!-- Timeline items will be inserted here -->
+            </div>
+        </div>
+    </div>
 
     <script>
         // ========================================
@@ -1410,7 +1781,8 @@
             dayStatuses: {},
             availableSlots: [],
             phone: null,
-            customerId: null
+            customerId: null,
+            notificationPreference: 'sms' // Default to SMS: 'sms', 'email', or 'both'
         };
 
         // ========================================
@@ -1509,13 +1881,13 @@
 
             // Handle register endpoint (multiple formats)
             if (normalizedEndpoint === 'register' || endpoint === '/register' || endpoint === '/api/register') {
-                // Simulate OTP send
-                console.log('[DEMO] OTP sent to:', data.phone, '| Code: 123456');
-                showToast('Demo OTP: 123456', 'info');
+                // Simulate verification code send (works for both phone and email)
+                const contact = data.phone || data.email || 'contact';
+                console.log('[DEMO] Verification code sent to:', contact, '| Code: 123456');
                 return { 
                     success: true, 
-                    message: 'OTP sent successfully',
-                    otp: '123456', // In demo mode, show the OTP
+                    message: 'Verification code sent successfully',
+                    otp: '123456', // In demo mode, include the code in response
                     student_id: 'STU_' + Date.now()
                 };
             }
@@ -1526,22 +1898,78 @@
                 if (data.otp && data.otp.length === 6) {
                     return {
                         success: true,
-                        message: 'OTP verified successfully',
+                        message: 'Verification code verified successfully',
                         student_id: 'STU_' + Date.now()
                     };
                 } else {
-                    throw new Error('Invalid OTP');
+                    throw new Error('Invalid verification code');
                 }
             }
 
             // Handle book-lesson endpoint (multiple formats)
             if (normalizedEndpoint === 'book-lesson' || endpoint === '/book-lesson' || endpoint === '/api/book-lesson') {
                 // Simulate booking confirmation
+                const lessonId = 'LESSON_' + Date.now();
                 return {
                     success: true,
                     message: 'Lessons booked successfully',
-                    lesson_ids: state.selectedSlots.map((_, i) => 'LESSON_' + Date.now() + '_' + i),
+                    lesson_id: lessonId, // Return singular lesson_id for first booking
+                    lesson_ids: state.selectedSlots.map((_, i) => lessonId + '_' + i),
                     total_amount: state.selectedSlots.length * (state.selectedLessonType?.price || 0)
+                };
+            }
+
+            // Handle notification timeline endpoint
+            // Match: /api/booking/{id}/notifications or booking/{id}/notifications
+            if (normalizedEndpoint.includes('booking/') && normalizedEndpoint.includes('/notifications')) {
+                const parts = normalizedEndpoint.split('/');
+                const bookingIndex = parts.indexOf('booking');
+                const bookingId = bookingIndex >= 0 && parts[bookingIndex + 1] ? parts[bookingIndex + 1] : 'unknown';
+                console.log('[DEMO] Simulating notification timeline for booking:', bookingId);
+                console.log('[DEMO] Endpoint:', endpoint, '→ normalized:', normalizedEndpoint);
+                
+                // Generate demo notification timeline based on user preference
+                const preference = state.notificationPreference || 'sms';
+                const timeline = [];
+                const serviceName = state.selectedLessonType?.name || 'appointment';
+                const customerPhone = state.phone || '+61 400 000 000';
+                const customerEmail = state.email || 'customer@example.com';
+                const now = new Date();
+                
+                // Add SMS notification if preference is 'sms' or 'both'
+                if (preference === 'sms' || preference === 'both') {
+                    timeline.push({
+                        id: 'notif_sms',
+                        type: 'sms',
+                        channel: 'SMS',
+                        recipient: 'Customer',
+                        recipient_contact: customerPhone,
+                        message: `Your ${serviceName} is booked. Please submit your deposit to confirm.`,
+                        status: 'sent',
+                        timestamp: new Date(now.getTime() - 2000).toISOString(),
+                        simulated: true
+                    });
+                }
+                
+                // Add Email notification if preference is 'email' or 'both'
+                if (preference === 'email' || preference === 'both') {
+                    timeline.push({
+                        id: 'notif_email',
+                        type: 'email',
+                        channel: 'Email',
+                        recipient: 'Customer',
+                        recipient_contact: customerEmail,
+                        subject: `Booking Confirmation - ${serviceName}`,
+                        message: `Your ${serviceName} has been booked. Please submit your deposit to confirm the booking.`,
+                        status: 'sent',
+                        timestamp: new Date(now.getTime() - 1000).toISOString(),
+                        simulated: true
+                    });
+                }
+                
+                return {
+                    success: true,
+                    timeline: timeline
                 };
             }
 
@@ -2259,7 +2687,7 @@
         }
 
         // ========================================
-        // BOOKING CONFIRMATION (OTP FLOW)
+        // BOOKING CONFIRMATION (VERIFICATION CODE FLOW)
         // ========================================
         async function confirmBooking() {
             // Show OTP modal to get phone number and verify user
@@ -2269,35 +2697,113 @@
         function showOtpModal() {
             document.getElementById('phoneStep').classList.remove('hidden');
             document.getElementById('otpStep').classList.add('hidden');
-                document.getElementById('otpModal').classList.add('show');
+            document.getElementById('otpModal').classList.add('show');
+            updateContactInput(); // Initialize input field based on default selection
         }
 
         function closeOtpModal() {
             document.getElementById('otpModal').classList.remove('show');
             state.phone = null;
+            state.email = null;
             state.customerId = null;
         }
 
+        function updateContactInput() {
+            const preferenceRadios = document.querySelectorAll('input[name="notificationPreference"]');
+            let preference = 'sms';
+            for (const radio of preferenceRadios) {
+                if (radio.checked) {
+                    preference = radio.value;
+                    break;
+                }
+            }
+            
+            const phoneGroup = document.getElementById('phoneInputGroup');
+            const emailGroup = document.getElementById('emailInputGroup');
+            const phoneInput = document.getElementById('phoneInput');
+            const emailInput = document.getElementById('emailInput');
+            
+            if (preference === 'email') {
+                // Email only - show email input, hide phone input
+                if (phoneGroup) phoneGroup.classList.add('hidden');
+                if (emailGroup) emailGroup.classList.remove('hidden');
+                if (phoneInput) phoneInput.value = '';
+            } else if (preference === 'both') {
+                // Both - show both inputs
+                if (phoneGroup) phoneGroup.classList.remove('hidden');
+                if (emailGroup) emailGroup.classList.remove('hidden');
+            } else {
+                // SMS only - show phone input, hide email input
+                if (phoneGroup) phoneGroup.classList.remove('hidden');
+                if (emailGroup) emailGroup.classList.add('hidden');
+                if (emailInput) emailInput.value = '';
+            }
+        }
+
         async function sendOtp() {
-            const phone = document.getElementById('phoneInput').value.trim();
-            if (!phone) {
-                showToast('Please enter a phone number', 'error');
-                return;
+            // Get notification preference
+            const preferenceRadios = document.querySelectorAll('input[name="notificationPreference"]');
+            let preference = 'sms';
+            for (const radio of preferenceRadios) {
+                if (radio.checked) {
+                    preference = radio.value;
+                    break;
+                }
+            }
+
+            // Get contact info based on preference
+            let phone = null;
+            let email = null;
+            
+            if (preference === 'email') {
+                email = document.getElementById('emailInput').value.trim();
+                if (!email) {
+                    showToast('Please enter an email address', 'error');
+                    return;
+                }
+            } else if (preference === 'both') {
+                phone = document.getElementById('phoneInput').value.trim();
+                email = document.getElementById('emailInput').value.trim();
+                if (!phone) {
+                    showToast('Please enter a phone number', 'error');
+                    return;
+                }
+                if (!email) {
+                    showToast('Please enter an email address', 'error');
+                    return;
+                }
+            } else {
+                // SMS only
+                phone = document.getElementById('phoneInput').value.trim();
+                if (!phone) {
+                    showToast('Please enter a phone number', 'error');
+                    return;
+                }
             }
 
             state.phone = phone;
+            state.email = email;
+            state.notificationPreference = preference;
 
             try {
-                const response = await apiCall('/api/register', 'POST', { phone });
+                // Always send phone for registration (even if email-only, we need phone for verification)
+                // But we'll use the preference for notifications
+                const requestData = preference === 'email' ? { email, phone: email } : { phone, email: email || null };
+                const response = await apiCall('/api/register', 'POST', requestData);
                 
                 if (response.student_id) {
                     state.customerId = response.student_id;
                 }
                 
-                document.getElementById('phoneDisplay').textContent = phone;
+                const contactInfo = phone || email || 'you';
+                document.getElementById('phoneDisplay').textContent = contactInfo;
                 document.getElementById('phoneStep').classList.add('hidden');
                 document.getElementById('otpStep').classList.remove('hidden');
-                showToast('Code sent to ' + phone, 'success');
+                showToast('Code sent to ' + contactInfo, 'success');
+                
+                // Show notification popup for verification code based on preference
+                const verificationCode = response.otp || '123456';
+                showVerificationCodeNotification(phone, email, preference, verificationCode);
             } catch (error) {
                 showToast('Failed to send code: ' + error.message, 'error');
             }
@@ -2311,12 +2817,12 @@
         async function verifyOtp() {
             const otp = document.getElementById('otpInput').value.trim();
             if (otp.length !== 6) {
-                showToast('Please enter a 6-digit code', 'error');
+                showToast('Please enter a 6-digit verification code', 'error');
                 return;
             }
             
             try {
-                // Verify OTP
+                // Verify verification code
                 const authResponse = await apiCall('/api/verify-otp', 'POST', {
                     phone: state.phone,
                     otp: otp
@@ -2338,6 +2844,7 @@
                 );
 
                 const bookingResponses = await Promise.all(bookingPromises);
+                console.log('[BOOKING] All bookings completed. Responses:', bookingResponses);
 
                 // Success!
                 document.getElementById('otpModal').classList.remove('show');
@@ -2347,15 +2854,25 @@
                     : `${count} appointments booked successfully!`;
                 showToast(msg, 'success');
 
-                // Reset state
-                resetBooking();
-                
-                // Show confirmation message
-                setTimeout(() => {
-                    showToast('Check your phone for booking details', 'info');
-                }, 2000);
+                // Show notification timeline for the first booking
+                console.log('[BOOKING] Checking for lesson_id. First response:', bookingResponses[0]);
+                if (bookingResponses.length > 0 && bookingResponses[0] && bookingResponses[0].lesson_id) {
+                    console.log('[BOOKING] ✅ Booking successful, lesson_id:', bookingResponses[0].lesson_id);
+                    setTimeout(() => {
+                        console.log('[BOOKING] Calling showNotificationTimeline with:', bookingResponses[0].lesson_id);
+                        showNotificationTimeline(bookingResponses[0].lesson_id);
+                    }, 1500);
+                } else {
+                    console.warn('[BOOKING] ❌ No lesson_id in response. Full response:', JSON.stringify(bookingResponses, null, 2));
+                    // Reset state if no timeline to show
+                    setTimeout(() => {
+                        resetBooking();
+                    }, 2000);
+                }
 
             } catch (error) {
+                console.error('[BOOKING] ❌ Error during booking:', error);
+                console.error('[BOOKING] Error stack:', error.stack);
                 showToast('Booking failed: ' + error.message, 'error');
             }
         }
@@ -2371,6 +2888,238 @@
             updateSummary();
             updateSlotCounter();
             renderCalendar();
+        }
+
+        async function showNotificationTimeline(bookingId) {
+            try {
+                console.log('[NOTIFICATIONS] Fetching notification timeline for booking:', bookingId);
+                const endpoint = `/api/booking/${bookingId}/notifications`;
+                console.log('[NOTIFICATIONS] Calling endpoint:', endpoint);
+                const response = await apiCall(endpoint, 'GET');
+                console.log('[NOTIFICATIONS] Response received:', response);
+                
+                if (response && response.success && response.timeline && response.timeline.length > 0) {
+                    console.log('[NOTIFICATIONS] ✅ Showing', response.timeline.length, 'notifications');
+                    // Show notification popups one by one
+                    await showNotificationPopups(response.timeline);
+                    
+                    // After all notifications, show timeline modal
+                    setTimeout(() => {
+                        showTimelineModal(response.timeline);
+                    }, (response.timeline.length * 3500) + 1000);
+                } else {
+                    console.warn('[NOTIFICATIONS] ❌ No timeline data available. Response:', response);
+                    // No timeline data, just reset
+                    resetBooking();
+                }
+            } catch (error) {
+                console.error('[NOTIFICATIONS] ❌ Failed to load notification timeline:', error);
+                console.error('[NOTIFICATIONS] Error details:', error.stack);
+                // On error, just reset booking
+                resetBooking();
+            }
+        }
+
+        async function showNotificationPopups(timeline) {
+            console.log('[NOTIFICATIONS] showNotificationPopups called with timeline:', timeline);
+            const container = document.getElementById('notificationContainer');
+            if (!container) {
+                console.error('[NOTIFICATIONS] notificationContainer not found!');
+                return;
+            }
+            console.log('[NOTIFICATIONS] Container found:', container);
+            console.log('[NOTIFICATIONS] Timeline length:', timeline.length);
+            
+            let topOffset = 20;
+            
+            for (let i = 0; i < timeline.length; i++) {
+                const item = timeline[i];
+                console.log(`[NOTIFICATIONS] Creating popup ${i + 1}/${timeline.length}:`, item);
+                await new Promise(resolve => {
+                    setTimeout(() => {
+                        const popup = createNotificationPopup(item, topOffset);
+                        console.log('[NOTIFICATIONS] Popup created:', popup);
+                        container.appendChild(popup);
+                        console.log('[NOTIFICATIONS] Popup appended to DOM');
+                        
+                        // Force a reflow to ensure styles are applied
+                        popup.offsetHeight;
+                        
+                        // Animate in immediately
+                        setTimeout(() => {
+                            popup.style.transform = 'translateX(0)';
+                            popup.style.opacity = '1';
+                            console.log('[NOTIFICATIONS] Animation started for popup', i + 1);
+                        }, 50);
+                        
+                        // Remove after 3 seconds
+                        setTimeout(() => {
+                            popup.classList.add('hiding');
+                            setTimeout(() => {
+                                if (popup.parentNode) {
+                                    popup.parentNode.removeChild(popup);
+                                    console.log('[NOTIFICATIONS] Popup removed:', i + 1);
+                                }
+                                resolve();
+                            }, 300);
+                        }, 3000);
+                    }, i * 1000); // Stagger notifications by 1 second
+                });
+                
+                topOffset += 180; // Offset for next notification
+            }
+            console.log('[NOTIFICATIONS] All popups processed');
+        }
+
+        function showVerificationCodeNotification(phone, email, preference, code) {
+            const timeline = [];
+            const now = new Date();
+            
+            // Send verification code via SMS if preference is SMS or Both
+            if (preference === 'sms' || preference === 'both') {
+                timeline.push({
+                    id: 'verification_code_sms',
+                    type: 'sms',
+                    channel: 'SMS',
+                    recipient: 'You',
+                    recipient_contact: phone,
+                    message: `Your verification code is ${code}. Use it to confirm your booking.`,
+                    status: 'sent',
+                    timestamp: now.toISOString(),
+                    simulated: true
+                });
+            }
+            
+            // Send verification code via Email if preference is Email or Both
+            if (preference === 'email' || preference === 'both') {
+                timeline.push({
+                    id: 'verification_code_email',
+                    type: 'email',
+                    channel: 'Email',
+                    recipient: 'You',
+                    recipient_contact: email,
+                    subject: 'Your Verification Code',
+                    message: `Your verification code is ${code}. Use it to confirm your booking.`,
+                    status: 'sent',
+                    timestamp: new Date(now.getTime() + 500).toISOString(),
+                    simulated: true
+                });
+            }
+            
+            if (timeline.length > 0) {
+                showNotificationPopups(timeline);
+            }
+        }
+
+        function createNotificationPopup(item, topOffset = 20) {
+            const popup = document.createElement('div');
+            popup.className = `notification-popup ${item.type}`;
+            // Set all positioning styles directly - these override CSS
+            popup.style.cssText = `
+                position: fixed !important;
+                top: ${topOffset}px !important;
+                right: 20px !important;
+                transform: translateX(450px) !important;
+                opacity: 0 !important;
+                transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.4s !important;
+                z-index: 3000 !important;
+                pointer-events: auto !important;
+            `;
+            
+            const icon = item.type === 'sms' ? '📱' : '📧';
+            const appName = item.type === 'sms' ? 'Messages' : 'Mail';
+            const sender = item.type === 'sms' ? 'Booking System' : 'Booking System';
+            const timestamp = new Date(item.timestamp).toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
+            
+            let bodyContent = '';
+            if (item.subject) {
+                bodyContent = `
+                    <div class="notification-subject">${escapeHtml(item.subject)}</div>
+                    <div class="notification-message">${escapeHtml(item.message)}</div>
+                `;
+            } else {
+                bodyContent = `<div class="notification-message">${escapeHtml(item.message)}</div>`;
+            }
+            
+            popup.innerHTML = `
+                <div class="notification-header">
+                    <div class="notification-icon">${icon}</div>
+                    <div class="notification-header-content">
+                        <div class="notification-app-name">${escapeHtml(appName)}</div>
+                        <div class="notification-type">${escapeHtml(item.channel)}</div>
+                    </div>
+                    <div class="notification-time">${timestamp}</div>
+                </div>
+                <div class="notification-body">
+                    <div class="notification-sender">${escapeHtml(sender)}</div>
+                    ${bodyContent}
+                </div>
+                <div class="notification-footer">
+                    📱 Simulated Notification
+                </div>
+            `;
+            
+            return popup;
+        }
+
+        function showTimelineModal(timeline) {
+            const modal = document.getElementById('notificationTimelineModal');
+            const content = document.getElementById('notificationTimelineContent');
+            
+            // Build timeline HTML
+            content.innerHTML = '<div class="notification-timeline">' +
+                timeline.map(item => {
+                    const icon = item.type === 'sms' ? '📱' : '📧';
+                    const timestamp = new Date(item.timestamp).toLocaleString();
+                    
+                    let messageHtml = '';
+                    if (item.subject) {
+                        messageHtml = `
+                            <div class="timeline-subject">${escapeHtml(item.subject)}</div>
+                            <div>${escapeHtml(item.message)}</div>
+                        `;
+                    } else {
+                        messageHtml = `<div>${escapeHtml(item.message)}</div>`;
+                    }
+                    
+                    return `
+                        <div class="timeline-item ${item.type}">
+                            <div class="timeline-icon">${icon}</div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <span class="timeline-channel">${escapeHtml(item.channel)}</span>
+                                    <span class="timeline-status">${escapeHtml(item.status)}</span>
+                                </div>
+                                <div class="timeline-recipient">
+                                    To: ${escapeHtml(item.recipient)}
+                                </div>
+                                <div class="timeline-contact">${escapeHtml(item.recipient_contact)}</div>
+                                <div class="timeline-message">
+                                    ${messageHtml}
+                                </div>
+                                <div class="timeline-timestamp">${timestamp}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('') +
+                '</div>';
+            
+            modal.classList.add('show');
+        }
+
+        function closeNotificationTimeline() {
+            document.getElementById('notificationTimelineModal').classList.remove('show');
+            resetBooking();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // ========================================
