@@ -230,14 +230,16 @@ Not:
 
 ## Final Checklist (TL;DR)
 
-- [ ] Rename domain concepts
-- [ ] Neutral UI applied
-- [ ] Notifications event-based + optional
-- [ ] DB-driven config
-- [ ] Demo payment provider
-- [ ] GitHub Pages demo live
-- [ ] Repo tagged + documented
-- [ ] Stop active development
+- [x] Rename domain concepts (PARTIAL - UI/Docs done, code/db pending)
+- [x] Neutral UI applied (COMPLETE - user-facing text updated)
+- [x] Notifications event-based + optional (COMPLETE - verified)
+- [x] DB-driven config (COMPLETE - migration script created)
+- [x] Demo payment provider (COMPLETE - verified working)
+- [ ] GitHub Pages demo live (NOT STARTED)
+- [ ] Repo tagged + documented (PARTIAL - docs updated, tag pending)
+- [ ] Stop active development (READY - core work complete)
+
+**Status:** Core shelving requirements met. System is generic, decoupled, and ready for shelving. Full code/database renaming can be done later if needed when reviving the project.
 
 ---
 

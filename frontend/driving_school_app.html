@@ -1704,7 +1704,7 @@
         const EFFECTIVE_BUSINESS_SLUG = BUSINESS_SLUG || CONFIG.FALLBACK_BUSINESS_SLUG;
         
         // Log configuration on startup
-        console.log('🚗 Driving School Booking Configuration:', {
+        console.log('📅 Scheduling Platform Configuration:', {
             pathname: window.location.pathname,
             pathParts: window.location.pathname.split('/').filter(p => p),
             hostname: window.location.hostname,
@@ -2030,7 +2030,7 @@
                 
                 return {
                     success: true,
-                    message: 'Lessons booked successfully',
+                    message: 'Appointments booked successfully',
                     lesson_id: lessonId,
                     lesson_ids: state.selectedSlots.map((_, i) => lessonId + '_' + i),
                     total_amount: totalAmount,
@@ -2231,8 +2231,8 @@
             setupEventListeners();
                 
                 const welcomeMsg = DEMO_MODE 
-                    ? 'Welcome! 🎮 Demo mode is active - Select an instructor and lesson type to explore'
-                    : `Welcome to ${BUSINESS_SLUG}! Select an instructor and lesson type to get started`;
+                    ? 'Welcome! 🎮 Demo mode is active - Select a provider and service to explore'
+                    : `Welcome to ${BUSINESS_SLUG}! Select a provider and service to get started`;
                 showToast(welcomeMsg, 'info');
                 
                 console.log('✅ Initialization complete');
@@ -2321,7 +2321,7 @@
                         });
                     }
                 } else {
-                    showToast('Failed to load instructors. Please check your connection.', 'error');
+                    showToast('Failed to load providers. Please check your connection.', 'error');
                 }
             }
         }
@@ -2369,7 +2369,7 @@
                         });
                     }
                 } else {
-                    showToast('Failed to load lesson types. Please check your connection.', 'error');
+                    showToast('Failed to load services. Please check your connection.', 'error');
                 }
             }
         }

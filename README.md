@@ -1,6 +1,8 @@
-# Driving School Scheduler
+# Generic Scheduling Platform
 
-A complete driving school scheduling system with student, instructor, and admin portals.
+A complete scheduling system for service-based businesses with customer, provider, and admin portals.
+
+**Status:** This project is currently shelved. The core scheduling engine is complete and can be adapted for various verticals (driving schools, fitness trainers, consultants, etc.).
 
 ## 🚀 Quick Start
 
@@ -64,22 +66,22 @@ Both are usually pre-installed on Windows 10/11.
 
 ## 📱 Features
 
-### Student Portal
+### Customer Portal
 - Phone-based registration with OTP
-- Book lessons
-- Submit PayID deposit
-- View lesson status
-- Reschedule/Cancel lessons
+- Book appointments
+- Submit deposit payments
+- View appointment status
+- Reschedule/Cancel appointments
 
-### Instructor Portal
+### Provider Portal
 - View calendar/schedule
-- Start lessons with OTP verification
+- Start appointments with OTP verification
 
 ### Admin Portal
 - Dashboard overview
 - Verify deposits
-- Manage instructors
-- Manage lesson types
+- Manage providers
+- Manage services
 - Analytics
 
 ## 🔌 API Configuration
@@ -94,10 +96,10 @@ const API_BASE_URL = 'http://localhost:8001';
 ## 📝 Data Storage
 
 Currently uses file-based JSON storage (perfect for MVP/testing):
-- `backend/data/students.json`
-- `backend/data/lessons.json`
-- `backend/data/deposits.json`
-- `backend/data/instructors.json`
+- `backend/data/students.json` (customers)
+- `backend/data/lessons.json` (appointments)
+- `backend/data/deposits.json` (payments)
+- `backend/data/instructors.json` (providers)
 
 ## 🛠️ Development
 
@@ -154,4 +156,16 @@ For production, you'll want to:
 ## 📄 License
 
 This is an MVP/demo project.
+
+## 🔄 Shelving Status
+
+This project has been generalized from a driving-school-specific scheduler to a generic scheduling engine. Key changes:
+
+- **Domain Concepts:** Uses generic terms (customers, providers, appointments, services) instead of industry-specific language
+- **Notifications:** Event-based, optional, non-blocking (SMS/Email via demo providers)
+- **Payments:** Demo payment provider (no real money processing)
+- **Configuration:** DB-driven settings (fail-closed defaults)
+- **UI:** Neutral, calm design suitable for any service business
+
+The system is ready to be shelved or adapted for new verticals without major refactoring.
 
