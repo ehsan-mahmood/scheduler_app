@@ -1902,6 +1902,10 @@
         
         // Helper function to build API URL with business slug
         function getApiUrl(endpoint) {
+            // In demo mode, this function shouldn't be called, but handle gracefully
+            if (DEMO_MODE || !CONFIG.API_BASE_URL) {
+                return ''; // Won't be used in demo mode anyway
+            }
             // Ensure endpoint starts with /api/
             if (!endpoint.startsWith('/api/')) {
                 endpoint = '/api' + endpoint;

@@ -235,7 +235,7 @@ Not:
 - [x] Notifications event-based + optional (COMPLETE - verified)
 - [x] DB-driven config (COMPLETE - migration script created)
 - [x] Demo payment provider (COMPLETE - verified working)
-- [ ] GitHub Pages demo live (NOT STARTED)
+- [x] GitHub Pages demo live (COMPLETE - ready to enable in settings)
 - [x] Repo tagged + documented (COMPLETE - tagged as v1-generic-core)
 - [ ] Stop active development (READY - core work complete)
 
