@@ -1071,7 +1071,7 @@
             <div class="text-center" style="margin-top: 1.5rem; color: var(--gray-600);">
                 <p>Don't have an account? <button class="link-button" onclick="showRegister()">Register</button></p>
                 <p style="margin-top: 0.5rem;"><button class="link-button" onclick="alert('Contact admin for password reset')">Forgot password?</button></p>
-                <p style="margin-top: 1rem;"><a href="driving_school_app.html" style="color: var(--primary);">← Back to Public Booking</a></p>
+                <p style="margin-top: 1rem;"><a href="index.html" style="color: var(--primary);">← Back to Public Booking</a></p>
             </div>
         </div>
     </div>
@@ -1111,7 +1111,7 @@
             <div class="text-center" style="color: var(--gray-600); padding-top: 1.5rem; border-top: 1px solid var(--gray-200);">
                 <p>Already have an account? <button class="link-button" onclick="showLogin()">Login</button></p>
                 <p style="margin-top: 0.5rem; font-size: 0.875rem;">
-                    Customers can also register through <a href="driving_school_app.html" style="color: var(--primary);">public booking page</a>
+                    Customers can also register through <a href="index.html" style="color: var(--primary);">public booking page</a>
                 </p>
             </div>
         </div>
@@ -1238,7 +1238,7 @@
         
         /**
          * Auto-detect business from URL
-         * Same logic as driving_school_app.html
+         * Same logic as index.html
          */
         function detectBusinessSlug() {
             // Check URL path first (e.g., /acme-driving/ or /acme-driving/portal.html)
@@ -1899,7 +1899,7 @@
                 </div>
 
                 <div class="quick-actions">
-                    <div class="quick-action-card" onclick="window.location.href='driving_school_app.html'">
+                    <div class="quick-action-card" onclick="window.location.href='index.html'">
                         <div class="quick-action-icon">📅</div>
                         <div class="quick-action-title">Book Appointment</div>
                         <div class="quick-action-desc">Schedule your next appointment</div>
@@ -1930,7 +1930,7 @@
                 <div class="card glass">
                     <div class="card-header">
                         <h3 class="card-title">All My Appointments</h3>
-                        <a href="driving_school_app.html" class="btn-success btn-sm">+ Book New Appointment</a>
+                        <a href="index.html" class="btn-success btn-sm">+ Book New Appointment</a>
                     </div>
                     ${renderBookingsTable(bookings, 'student')}
                 </div>
