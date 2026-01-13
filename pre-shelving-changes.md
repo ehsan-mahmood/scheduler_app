@@ -236,7 +236,7 @@ Not:
 - [x] DB-driven config (COMPLETE - migration script created)
 - [x] Demo payment provider (COMPLETE - verified working)
 - [ ] GitHub Pages demo live (NOT STARTED)
-- [ ] Repo tagged + documented (PARTIAL - docs updated, tag pending)
+- [x] Repo tagged + documented (COMPLETE - tagged as v1-generic-core)
 - [ ] Stop active development (READY - core work complete)
 
 **Status:** Core shelving requirements met. System is generic, decoupled, and ready for shelving. Full code/database renaming can be done later if needed when reviving the project.
