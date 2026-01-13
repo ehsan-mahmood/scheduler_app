@@ -24,7 +24,8 @@ The demo is available at: `https://[your-username].github.io/[repo-name]/`
 
 ## Files
 
-- `index.html` - Main demo application (full scheduler)
+- `index.html` - Main demo application (full scheduler - booking interface)
+- `portal.html` - Portal demo (admin/instructor/customer dashboard)
 - `.nojekyll` - Disables Jekyll processing
 
 ## Setup

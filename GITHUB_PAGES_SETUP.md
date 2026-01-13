@@ -15,7 +15,8 @@
 
 ## What's Included
 
-- `docs/index.html` - Full scheduler demo (forced demo mode)
+- `docs/index.html` - Full scheduler demo - booking interface (forced demo mode)
+- `docs/portal.html` - Portal demo - admin/instructor/customer dashboard (forced demo mode)
 - `docs/.nojekyll` - Disables Jekyll processing
 - `docs/README.md` - Demo documentation
 
