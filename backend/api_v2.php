@@ -12,6 +12,9 @@ require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/notifications/NotificationHelper.php';
 require_once __DIR__ . '/notifications/NotificationTimelineHelper.php';
 
+// Load payment system
+require_once __DIR__ . '/payments/PaymentHelper.php';
+
 // CORS Headers
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -735,7 +738,7 @@ if ($route === 'api/book-lesson' && $method === 'POST') {
 
 /**
  * POST /{business}/api/submit-deposit
- * Submit payment deposit reference
+ * Submit payment deposit reference (processed through payment system)
  */
 if ($route === 'api/submit-deposit' && $method === 'POST') {
     $db = getDbConnection();
@@ -764,15 +767,103 @@ if ($route === 'api/submit-deposit' && $method === 'POST') {
     // Calculate deposit
     $depositPercentage = (int)getBusinessConfig('deposit_percentage', '50');
     $depositAmount = ($lesson['price'] * $depositPercentage) / 100;
+    $currency = getBusinessConfig('currency', 'AUD');
     
-    // Create deposit record
-    $depositId = createDeposit($lessonId, $payidReference, $depositAmount);
+    // Process payment through payment system
+    $paymentResult = processPaymentForLesson($lessonId, $depositAmount, $currency, $payidReference, $BUSINESS_ID);
+    
+    // Build response based on payment status
+    $response = [
+        'success' => $paymentResult['success'],
+        'deposit_id' => $paymentResult['deposit_id'],
+        'status' => $paymentResult['status'],
+        'transaction_id' => $paymentResult['transaction_id'],
+        'payid_reference' => $payidReference
+    ];
+    
+    if ($paymentResult['status'] === 'confirmed') {
+        $response['message'] = 'Payment processed successfully. Deposit confirmed.';
+        $response['receipt'] = $paymentResult['receipt'];
+    } else if ($paymentResult['status'] === 'failed') {
+        $response['message'] = 'Payment processing failed.';
+        $response['error'] = 'Payment could not be processed';
+    } else {
+        $response['message'] = 'Payment submitted. Awaiting verification.';
+    }
+    
+    sendResponse($response);
+}
+
+/**
+ * GET /{business}/api/payment-receipt/{deposit_id}
+ * Get payment receipt
+ */
+if (preg_match('/^api\/payment-receipt\/([^\/]+)$/', $route, $matches) && $method === 'GET') {
+    $db = getDbConnection();
+    $depositId = $matches[1];
+    
+    // Get deposit with related data
+    $stmt = $db->prepare("
+        SELECT 
+            pd.id as deposit_id,
+            pd.amount,
+            pd.currency,
+            pd.status as deposit_status,
+            pd.transaction_id,
+            pd.payment_method,
+            pd.verified_at,
+            pd.created_at as deposit_created_at,
+            l.id as lesson_id,
+            l.scheduled_at,
+            s.name as student_name,
+            s.phone as student_phone,
+            lt.name as lesson_type_name,
+            lt.price as lesson_type_price
+        FROM payment_deposits pd
+        JOIN lessons l ON pd.lesson_id = l.id
+        JOIN students s ON l.student_id = s.id
+        JOIN lesson_types lt ON l.lesson_type_id = lt.id
+        WHERE pd.id = ? AND pd.business_id = ?
+    ");
+    $stmt->execute([$depositId, $BUSINESS_ID]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$result) {
+        sendError('Receipt not found');
+    }
+    
+    // Build receipt data
+    $deposit = [
+        'id' => $result['deposit_id'],
+        'amount' => $result['amount'],
+        'currency' => $result['currency'] ?? 'AUD',
+        'status' => $result['deposit_status'],
+        'transaction_id' => $result['transaction_id'],
+        'payment_method' => $result['payment_method'] ?? 'simulated',
+        'verified_at' => $result['verified_at'],
+        'created_at' => $result['deposit_created_at']
+    ];
+    
+    $lesson = [
+        'id' => $result['lesson_id'],
+        'scheduled_at' => $result['scheduled_at']
+    ];
+    
+    $student = [
+        'name' => $result['student_name'],
+        'phone' => $result['student_phone']
+    ];
+    
+    $lessonType = [
+        'name' => $result['lesson_type_name'],
+        'price' => $result['lesson_type_price']
+    ];
+    
+    $receipt = generatePaymentReceipt($deposit, $lesson, $student, $lessonType);
     
     sendResponse([
         'success' => true,
-        'message' => 'Deposit reference submitted. Awaiting verification.',
-        'deposit_id' => $depositId,
-        'payid_reference' => $payidReference
+        'receipt' => $receipt
     ]);
 }
 

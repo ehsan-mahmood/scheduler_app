@@ -1571,6 +1571,50 @@
         </div>
     </div>
 
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Complete Payment</h2>
+                <button class="close-btn" onclick="closePaymentModal()">&times;</button>
+            </div>
+            <div class="modal-info" style="margin-bottom: 1.5rem;">
+                <strong>💳 Simulated Payment</strong><br>
+                This is a demo payment. No real money will be charged.
+            </div>
+            <div id="paymentContent">
+                <div class="form-group">
+                    <label>Total Amount</label>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);" id="paymentTotalAmount">$0.00</div>
+                </div>
+                <div class="form-group">
+                    <label>Deposit Required (50%)</label>
+                    <div style="font-size: 1.25rem; font-weight: 600; color: var(--accent);" id="paymentDepositAmount">$0.00</div>
+                </div>
+                <div class="form-group">
+                    <label for="payidReference">Payment Reference (Demo)</label>
+                    <input type="text" id="payidReference" placeholder="Enter any reference (e.g., DEMO123)" value="DEMO-REF-12345">
+                    <small style="color: var(--text-gray); font-size: 0.85rem; margin-top: 0.25rem; display: block;">
+                        In demo mode, any reference will work
+                    </small>
+                </div>
+                <button class="btn-primary" onclick="submitPayment()" style="width: 100%; margin-top: 1rem;">
+                    Process Payment (Simulated)
+                </button>
+                <button class="btn-primary" onclick="closePaymentModal()" style="width: 100%; margin-top: 0.5rem; background: var(--gray-500);">
+                    Pay Later
+                </button>
+            </div>
+            <div id="paymentReceipt" class="hidden" style="margin-top: 1.5rem; padding: 1.5rem; background: #f9fafb; border-radius: 8px; border: 1px solid var(--border-light);">
+                <h3 style="margin-bottom: 1rem; color: var(--success);">✓ Payment Successful</h3>
+                <div id="receiptContent"></div>
+                <button class="btn-primary" onclick="closePaymentModal()" style="width: 100%; margin-top: 1rem;">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ========================================
         // CONFIGURATION
@@ -1683,6 +1727,59 @@
         }
 
         // ========================================
+        // LOCALSTORAGE HELPERS (Demo Mode)
+        // ========================================
+        const STORAGE_KEY = 'scheduler_demo_data';
+        
+        function getStoredData() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                return stored ? JSON.parse(stored) : { bookings: [], payments: [] };
+            } catch (e) {
+                console.error('[DEMO] Error reading from localStorage:', e);
+                return { bookings: [], payments: [] };
+            }
+        }
+        
+        function saveStoredData(data) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {
+                console.error('[DEMO] Error saving to localStorage:', e);
+            }
+        }
+        
+        function addBooking(booking) {
+            if (!DEMO_MODE) return;
+            const data = getStoredData();
+            data.bookings.push(booking);
+            saveStoredData(data);
+        }
+        
+        function addPayment(payment) {
+            if (!DEMO_MODE) return;
+            const data = getStoredData();
+            data.payments.push(payment);
+            saveStoredData(data);
+        }
+        
+        function getPayment(depositId) {
+            if (!DEMO_MODE) return null;
+            const data = getStoredData();
+            return data.payments.find(p => p.deposit_id === depositId || p.id === depositId);
+        }
+        
+        function updateBooking(lessonId, updates) {
+            if (!DEMO_MODE) return;
+            const data = getStoredData();
+            const booking = data.bookings.find(b => b.lesson_id === lessonId);
+            if (booking) {
+                Object.assign(booking, updates);
+                saveStoredData(data);
+            }
+        }
+
+        // ========================================
         // DEMO DATA
         // ========================================
         const DEMO_DATA = {
@@ -1782,7 +1879,9 @@
             availableSlots: [],
             phone: null,
             customerId: null,
-            notificationPreference: 'sms' // Default to SMS: 'sms', 'email', or 'both'
+            notificationPreference: 'sms', // Default to SMS: 'sms', 'email', or 'both'
+            lastBookingResponses: null,
+            lastBookingLessonId: null
         };
 
         // ========================================
@@ -1909,13 +2008,141 @@
             // Handle book-lesson endpoint (multiple formats)
             if (normalizedEndpoint === 'book-lesson' || endpoint === '/book-lesson' || endpoint === '/api/book-lesson') {
                 // Simulate booking confirmation
-                const lessonId = 'LESSON_' + Date.now();
+                const lessonId = 'LESSON_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                const totalAmount = state.selectedSlots.length * (state.selectedLessonType?.price || 0);
+                const depositAmount = Math.round(totalAmount * 0.5 * 100) / 100; // 50% deposit
+                
+                // Store booking in LocalStorage
+                const booking = {
+                    lesson_id: lessonId,
+                    instructor_id: data.instructor_id || state.selectedInstructorId,
+                    lesson_type_id: data.lesson_type_id || state.selectedLessonTypeId,
+                    scheduled_at: data.scheduled_at,
+                    status: 'pending_deposit',
+                    deposit_paid: false,
+                    total_amount: totalAmount,
+                    deposit_amount: depositAmount,
+                    phone: state.phone,
+                    email: state.email,
+                    created_at: new Date().toISOString()
+                };
+                addBooking(booking);
+                
                 return {
                     success: true,
                     message: 'Lessons booked successfully',
-                    lesson_id: lessonId, // Return singular lesson_id for first booking
+                    lesson_id: lessonId,
                     lesson_ids: state.selectedSlots.map((_, i) => lessonId + '_' + i),
-                    total_amount: state.selectedSlots.length * (state.selectedLessonType?.price || 0)
+                    total_amount: totalAmount,
+                    deposit_required: depositAmount
+                };
+            }
+            
+            // Handle submit-deposit endpoint (payment simulation)
+            if (normalizedEndpoint === 'submit-deposit' || endpoint === '/submit-deposit' || endpoint === '/api/submit-deposit') {
+                const lessonId = data.lesson_id;
+                const payidReference = data.payid_reference || data.payid_reference || 'DEMO-REF-' + Date.now();
+                
+                // Find booking
+                const storedData = getStoredData();
+                const booking = storedData.bookings.find(b => b.lesson_id === lessonId);
+                
+                if (!booking) {
+                    throw new Error('Booking not found');
+                }
+                
+                // Simulate payment processing (always succeeds in demo mode)
+                const transactionId = 'DEMO-' + Math.random().toString(36).substr(2, 12).toUpperCase();
+                const depositId = 'DEPOSIT_' + Date.now();
+                const depositAmount = booking.deposit_amount || booking.total_amount * 0.5;
+                
+                // Create payment record
+                const payment = {
+                    id: depositId,
+                    deposit_id: depositId,
+                    lesson_id: lessonId,
+                    amount: depositAmount,
+                    currency: 'AUD',
+                    status: 'confirmed',
+                    transaction_id: transactionId,
+                    payment_method: 'simulated',
+                    payid_reference: payidReference,
+                    simulated: true,
+                    verified_at: new Date().toISOString(),
+                    created_at: new Date().toISOString(),
+                    receipt: {
+                        receipt_id: depositId,
+                        transaction_id: transactionId,
+                        amount: depositAmount,
+                        currency: 'AUD',
+                        status: 'confirmed',
+                        payment_method: 'simulated',
+                        processed_at: new Date().toISOString(),
+                        simulated: true
+                    }
+                };
+                addPayment(payment);
+                
+                // Update booking status
+                updateBooking(lessonId, {
+                    status: 'confirmed',
+                    deposit_paid: true,
+                    deposit_id: depositId
+                });
+                
+                return {
+                    success: true,
+                    message: 'Payment processed successfully. Deposit confirmed.',
+                    deposit_id: depositId,
+                    status: 'confirmed',
+                    transaction_id: transactionId,
+                    receipt: payment.receipt,
+                    payid_reference: payidReference
+                };
+            }
+            
+            // Handle payment-receipt endpoint
+            if (normalizedEndpoint.includes('payment-receipt/') || endpoint.includes('payment-receipt/')) {
+                const parts = normalizedEndpoint.split('/');
+                const receiptIndex = parts.indexOf('payment-receipt');
+                const depositId = receiptIndex >= 0 && parts[receiptIndex + 1] ? parts[receiptIndex + 1] : null;
+                
+                if (!depositId) {
+                    throw new Error('Deposit ID required');
+                }
+                
+                const payment = getPayment(depositId);
+                if (!payment) {
+                    throw new Error('Receipt not found');
+                }
+                
+                // Get associated booking for receipt details
+                const storedData = getStoredData();
+                const booking = storedData.bookings.find(b => b.lesson_id === payment.lesson_id);
+                
+                const receipt = {
+                    receipt_id: payment.id,
+                    transaction_id: payment.transaction_id,
+                    amount: payment.amount,
+                    currency: payment.currency || 'AUD',
+                    status: payment.status,
+                    payment_method: payment.payment_method || 'simulated',
+                    processed_at: payment.verified_at || payment.created_at,
+                    simulated: true,
+                    customer: {
+                        name: 'Demo Customer',
+                        phone: booking?.phone || '+61 400 000 000'
+                    },
+                    booking: {
+                        lesson_id: payment.lesson_id,
+                        lesson_type: 'Demo Service',
+                        scheduled_at: booking?.scheduled_at || new Date().toISOString()
+                    }
+                };
+                
+                return {
+                    success: true,
+                    receipt: receipt
                 };
             }
 
@@ -1987,9 +2214,10 @@
                 const banner = document.getElementById('demoBanner');
                 
                 if (DEMO_MODE) {
-                    banner.innerHTML = `Demo Mode`;
+                    banner.innerHTML = `🎮 Demo Mode`;
                     banner.classList.add('show');
                     console.log('Demo mode badge displayed');
+                    console.log('💾 Demo mode uses LocalStorage for state persistence');
                 } else {
                     // No demo badge in production mode
                     banner.classList.remove('show');
@@ -2846,6 +3074,10 @@
                 const bookingResponses = await Promise.all(bookingPromises);
                 console.log('[BOOKING] All bookings completed. Responses:', bookingResponses);
 
+                // Store booking info for payment
+                state.lastBookingResponses = bookingResponses;
+                state.lastBookingLessonId = bookingResponses[0]?.lesson_id;
+
                 // Success!
                 document.getElementById('otpModal').classList.remove('show');
                 const count = state.selectedSlots.length;
@@ -2858,9 +3090,43 @@
                 console.log('[BOOKING] Checking for lesson_id. First response:', bookingResponses[0]);
                 if (bookingResponses.length > 0 && bookingResponses[0] && bookingResponses[0].lesson_id) {
                     console.log('[BOOKING] ✅ Booking successful, lesson_id:', bookingResponses[0].lesson_id);
+                    
+                    // Show notification timeline first, then payment modal (only in demo mode)
                     setTimeout(() => {
                         console.log('[BOOKING] Calling showNotificationTimeline with:', bookingResponses[0].lesson_id);
-                        showNotificationTimeline(bookingResponses[0].lesson_id);
+                        showNotificationTimeline(bookingResponses[0].lesson_id).then(() => {
+                            // After notification timeline closes, show payment modal (only in demo mode)
+                            if (DEMO_MODE) {
+                                console.log('[PAYMENT] Demo mode active, showing payment modal');
+                                setTimeout(() => {
+                                    showPaymentModal(bookingResponses[0]);
+                                }, 1000);
+                            } else {
+                                // In production mode, just reset
+                                resetBooking();
+                            }
+                        }).catch(() => {
+                            // If timeline fails, still show payment in demo mode
+                            if (DEMO_MODE) {
+                                console.log('[PAYMENT] Timeline failed, but showing payment modal anyway (demo mode)');
+                                setTimeout(() => {
+                                    showPaymentModal(bookingResponses[0]);
+                                }, 1000);
+                            } else {
+                                resetBooking();
+                            }
+                        });
+                        
+                        // Fallback: Show payment modal after 10 seconds if notification timeline doesn't resolve
+                        if (DEMO_MODE) {
+                            setTimeout(() => {
+                                const modal = document.getElementById('paymentModal');
+                                if (modal && !modal.classList.contains('show')) {
+                                    console.log('[PAYMENT] Fallback: Showing payment modal after timeout');
+                                    showPaymentModal(bookingResponses[0]);
+                                }
+                            }, 10000);
+                        }
                     }, 1500);
                 } else {
                     console.warn('[BOOKING] ❌ No lesson_id in response. Full response:', JSON.stringify(bookingResponses, null, 2));
@@ -2891,33 +3157,38 @@
         }
 
         async function showNotificationTimeline(bookingId) {
-            try {
-                console.log('[NOTIFICATIONS] Fetching notification timeline for booking:', bookingId);
-                const endpoint = `/api/booking/${bookingId}/notifications`;
-                console.log('[NOTIFICATIONS] Calling endpoint:', endpoint);
-                const response = await apiCall(endpoint, 'GET');
-                console.log('[NOTIFICATIONS] Response received:', response);
-                
-                if (response && response.success && response.timeline && response.timeline.length > 0) {
-                    console.log('[NOTIFICATIONS] ✅ Showing', response.timeline.length, 'notifications');
-                    // Show notification popups one by one
-                    await showNotificationPopups(response.timeline);
+            return new Promise(async (resolve) => {
+                try {
+                    console.log('[NOTIFICATIONS] Fetching notification timeline for booking:', bookingId);
+                    const endpoint = `/api/booking/${bookingId}/notifications`;
+                    console.log('[NOTIFICATIONS] Calling endpoint:', endpoint);
+                    const response = await apiCall(endpoint, 'GET');
+                    console.log('[NOTIFICATIONS] Response received:', response);
                     
-                    // After all notifications, show timeline modal
-                    setTimeout(() => {
-                        showTimelineModal(response.timeline);
-                    }, (response.timeline.length * 3500) + 1000);
-                } else {
-                    console.warn('[NOTIFICATIONS] ❌ No timeline data available. Response:', response);
-                    // No timeline data, just reset
-                    resetBooking();
+                    // Store resolve function to call when modal closes
+                    state.notificationTimelineResolve = resolve;
+                    
+                    if (response && response.success && response.timeline && response.timeline.length > 0) {
+                        console.log('[NOTIFICATIONS] ✅ Showing', response.timeline.length, 'notifications');
+                        // Show notification popups one by one
+                        await showNotificationPopups(response.timeline);
+                        
+                        // After all notifications, show timeline modal
+                        setTimeout(() => {
+                            showTimelineModal(response.timeline);
+                        }, (response.timeline.length * 3500) + 1000);
+                    } else {
+                        console.warn('[NOTIFICATIONS] ❌ No timeline data available. Response:', response);
+                        // No timeline data, resolve immediately
+                        resolve();
+                    }
+                } catch (error) {
+                    console.error('[NOTIFICATIONS] ❌ Failed to load notification timeline:', error);
+                    console.error('[NOTIFICATIONS] Error details:', error.stack);
+                    // On error, resolve immediately
+                    resolve();
                 }
-            } catch (error) {
-                console.error('[NOTIFICATIONS] ❌ Failed to load notification timeline:', error);
-                console.error('[NOTIFICATIONS] Error details:', error.stack);
-                // On error, just reset booking
-                resetBooking();
-            }
+            });
         }
 
         async function showNotificationPopups(timeline) {
@@ -3113,7 +3384,117 @@
 
         function closeNotificationTimeline() {
             document.getElementById('notificationTimelineModal').classList.remove('show');
+            // Don't reset booking here - let payment modal handle it
+            if (state.notificationTimelineResolve) {
+                state.notificationTimelineResolve();
+                state.notificationTimelineResolve = null;
+            }
+        }
+        
+        // ========================================
+        // PAYMENT MODAL FUNCTIONS
+        // ========================================
+        function showPaymentModal(bookingResponse) {
+            console.log('[PAYMENT] showPaymentModal called', { bookingResponse, DEMO_MODE });
+            
+            if (!DEMO_MODE) {
+                // In production mode, payment would be handled differently
+                resetBooking();
+                return;
+            }
+            
+            const modal = document.getElementById('paymentModal');
+            if (!modal) {
+                console.error('[PAYMENT] Payment modal element not found!');
+                return;
+            }
+            
+            const totalAmount = bookingResponse.total_amount || (state.selectedSlots.length * (state.selectedLessonType?.price || 0));
+            const depositAmount = Math.round(totalAmount * 0.5 * 100) / 100; // 50% deposit
+            
+            console.log('[PAYMENT] Amounts calculated', { totalAmount, depositAmount });
+            
+            // Store for payment submission
+            state.pendingDepositAmount = depositAmount;
+            state.pendingLessonId = bookingResponse.lesson_id;
+            
+            // Update UI
+            const totalAmountEl = document.getElementById('paymentTotalAmount');
+            const depositAmountEl = document.getElementById('paymentDepositAmount');
+            const paymentContentEl = document.getElementById('paymentContent');
+            const paymentReceiptEl = document.getElementById('paymentReceipt');
+            const payidRefEl = document.getElementById('payidReference');
+            
+            if (totalAmountEl) totalAmountEl.textContent = `$${totalAmount.toFixed(2)}`;
+            if (depositAmountEl) depositAmountEl.textContent = `$${depositAmount.toFixed(2)}`;
+            if (paymentContentEl) paymentContentEl.classList.remove('hidden');
+            if (paymentReceiptEl) paymentReceiptEl.classList.add('hidden');
+            if (payidRefEl) payidRefEl.value = 'DEMO-REF-' + Date.now();
+            
+            modal.classList.add('show');
+            console.log('[PAYMENT] Payment modal shown');
+        }
+        
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('show');
             resetBooking();
+        }
+        
+        async function submitPayment() {
+            if (!DEMO_MODE) return;
+            
+            const payidReference = document.getElementById('payidReference').value.trim();
+            if (!payidReference) {
+                showToast('Please enter a payment reference', 'error');
+                return;
+            }
+            
+            if (!state.pendingLessonId) {
+                showToast('No booking found for payment', 'error');
+                return;
+            }
+            
+            try {
+                const response = await apiCall('/api/submit-deposit', 'POST', {
+                    lesson_id: state.pendingLessonId,
+                    payid_reference: payidReference
+                });
+                
+                if (response.success && response.status === 'confirmed') {
+                    // Show receipt
+                    document.getElementById('paymentContent').classList.add('hidden');
+                    document.getElementById('paymentReceipt').classList.remove('hidden');
+                    
+                    const receiptHtml = `
+                        <div style="margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--text-gray);">Transaction ID:</span>
+                                <strong>${response.transaction_id}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--text-gray);">Amount:</span>
+                                <strong>$${response.receipt.amount.toFixed(2)} ${response.receipt.currency}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--text-gray);">Status:</span>
+                                <strong style="color: var(--success);">${response.status.toUpperCase()}</strong>
+                            </div>
+                            <div style="margin-top: 1rem; padding: 0.75rem; background: #fff3cd; border-radius: 4px; font-size: 0.85rem; color: #856404;">
+                                <strong>⚠️ Simulated Payment</strong><br>
+                                This is a demo payment. No real money was charged.
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('receiptContent').innerHTML = receiptHtml;
+                    
+                    showToast('Payment processed successfully!', 'success');
+                } else {
+                    showToast('Payment processing failed', 'error');
+                }
+            } catch (error) {
+                console.error('[PAYMENT] Error:', error);
+                showToast('Payment failed: ' + error.message, 'error');
+            }
         }
 
         function escapeHtml(text) {
